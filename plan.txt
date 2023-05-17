@@ -2,4 +2,25 @@ Robot Arm project
 
 Chris Morrey 7:34 AM 5/17/2023
 
+Workflow
+    The ufactory xArm 6 can be run from UFACTORY Studio, or from RoboDK. RoboDK also features a connection between Rhino and RoboDK that will allow sharing of geometry for RoboDK to interpret. 
 
+Resources
+    Ufactory:
+
+   https://robodk.com/doc/en/PythonAPI/robodk.html#robodk.robolink.Robolink.setParam 
+
+
+
+{% tab title="xArm 6" %} Maximum Speed: 180°/s
+
+Working Range:
+
+Joint 1	±360°
+Joint 2	-118°～120°
+Joint 3	-225°～11°
+Joint 4	±360°
+Joint 5	-97°～180°
+Joint 6	±360°
+{% endtab %}	
+{% tab title="xArm 7" %} Maximum S
