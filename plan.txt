@@ -3,16 +3,20 @@ Robot Arm project
 Chris Morrey 7:34 AM 5/17/2023
 
 Workflow
-    The ufactory xArm 6 can be run from UFACTORY Studio, or from RoboDK. RoboDK also features a connection between Rhino and RoboDK that will allow sharing of geometry for RoboDK to interpret. 
+    The ufactory xArm 6 can be run from UFACTORY Studio, or from RoboDK. Our goal is to use RoboDK, probably. RoboDK also features a connection between Rhino and RoboDK that will allow sharing of geometry for RoboDK to interpret as robot movement, and can output movement as Python script using the uFactory. Sub scripts can be inserted to control effectors like the WASP extruder. 
+
+    Another option is to generate the position information in Rhino/ grasshopper and format it in Python and control the arm directly this way. 
+
+    The thing we need is to understand how to format requests to communicate with the extruder in Python, according to the 
 
 Resources
     Ufactory:
 
+
+    RoboDK:
    https://robodk.com/doc/en/PythonAPI/robodk.html#robodk.robolink.Robolink.setParam 
 
-
-
-{% tab title="xArm 6" %} Maximum Speed: 180°/s
+Maximum Speed: 180°/s
 
 Working Range:
 
@@ -22,5 +26,3 @@ Joint 3	-225°～11°
 Joint 4	±360°
 Joint 5	-97°～180°
 Joint 6	±360°
-{% endtab %}	
-{% tab title="xArm 7" %} Maximum S
