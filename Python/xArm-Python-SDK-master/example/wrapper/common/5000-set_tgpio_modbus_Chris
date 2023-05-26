@@ -42,18 +42,18 @@ arm.set_state(0)
 # print('set_tgpio_modbus_timeout, code={}'.format(code))
 
 # set tool gpio modbus baudrate
-code = arm.set_tgpio_modbus_baudrate(2000000)
+code = arm.set_tgpio_modbus_baudrate(921600)
 print('set_tgpio_modbus_baudrate, code={}'.format(code))
 time.sleep(2)
 
-# enable bio gripper
+# set EXTRUDER direction
 code, ret = arm.getset_tgpio_modbus_data([0x08, 0x06, 0x01, 0x00, 0x00, 0x01])
-print('set_bio_gripper_enable, code={}, ret={}'.format(code, ret))
+print('Direction{}, ret={}'.format(code, ret))
 
-# set bio gripper speed
+# set EXTRUDER speed
 speed = 1000
 code, ret = arm.getset_tgpio_modbus_data([0x08, 0x06, 0x03, 0x03, speed // 256 % 256, speed % 256])
-print('set_bio_gripper_speed, code={}, ret={}'.format(code, ret))
+print('extruder speed is, code={}, ret={}'.format(code, ret))
 
 while arm.connected and arm.error_code == 0:
     code, ret = arm.getset_tgpio_modbus_data([0x08, 0x10, 0x07, 0x00, 0x00, 0x02, 0x04, 0x0, 0x0, 0x0, 0x82])

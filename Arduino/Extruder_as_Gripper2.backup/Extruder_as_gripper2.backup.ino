@@ -52,7 +52,7 @@ static unsigned char PROGMEM const retract_glcd_bmp[] =
 #define stepPinStepper   9  // green wire
 #define stepsPerRevolution 200
 
-const int baudRate = 115200;
+const int baudRate = 921600;
 unsigned int extruder_speed;
 unsigned int extruder_dir;
 
@@ -67,32 +67,33 @@ void setup() {
     for(;;); // Don't proceed, loop forever
    }
 // start the Modbus RTU server, with (slave) id 8
-if (!ModbusRTUServer.begin(8,115200,SERIAL_8N1)) {
+if (!ModbusRTUServer.begin(8,921600,SERIAL_8N1)) {
     Serial.println("Failed to start Modbus RTU Server!");
     while (1);
     }
-  // configure speed holding registers at address 771 / 0x0303
-  ModbusRTUServer.configureHoldingRegisters(771,4); 
-  // configure mode holding registers at address 257 / 0x0101
-  ModbusRTUServer.configureHoldingRegisters(257,4); 
+  // configure speed holding registers at address 
+  ModbusRTUServer.configureHoldingRegisters(771,1); 
+  // configure mode holding registers at address 256 / 0x0100
+  ModbusRTUServer.configureHoldingRegisters(256,1); 
 }
 void loop() {
   display.clearDisplay();
   // poll for Modbus RTU requests****************************************************************
   ModbusRTUServer.poll();
+  delay (10);
   int bigByteSpd = ModbusRTUServer.holdingRegisterRead(771);
-  int lilByteSpd = ModbusRTUServer.holdingRegisterRead(772);
+  //int lilByteSpd = ModbusRTUServer.holdingRegisterRead(772);
   long x0 = (long)bigByteSpd<<8;
-  long x1 = (long)lilByteSpd;
+  //long x1 = (long)lilByteSpd;
 
   
 
-  int bigByteDir = ModbusRTUServer.holdingRegisterRead(257);
-  int lilByteDir = ModbusRTUServer.holdingRegisterRead(258);
+  int bigByteDir = ModbusRTUServer.holdingRegisterRead(256);
+  //int lilByteDir = ModbusRTUServer.holdingRegisterRead(257);
   long y0 = (long)bigByteDir<<8;
-  long y1 = (long)lilByteDir;
+  //long y1 = (long)lilByteDir;
 
-  extruder_speed = x0|x1;
+  extruder_speed = x0; //|x1;
   Serial.println (extruder_speed);
   extruder_dir = bigByteDir;
   Serial.println (extruder_dir);
