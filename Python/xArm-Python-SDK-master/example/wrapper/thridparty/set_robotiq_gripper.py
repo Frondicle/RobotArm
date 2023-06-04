@@ -24,9 +24,9 @@ parser.read('../robot.conf')
 try:
     ip = parser.get('xArm', 'ip')
 except:
-    ip = input('Please input the xArm ip address[192.168.1.194]:')
+    ip = input('Please input the xArm ip address[192.168.1.196]:')
     if not ip:
-        ip = '192.168.1.194'
+        ip = '192.168.1.196'
 
 arm = XArmAPI(ip)
 arm.motion_enable(True)
