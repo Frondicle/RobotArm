@@ -53,8 +53,8 @@ static unsigned char PROGMEM const retract_glcd_bmp[] =
 #define stepsPerRevolution 200
 
 const int baudRate = 921600;
-unsigned int extruder_speed;
-unsigned int extruder_dir;
+unsigned int extruder_speed = 0;
+unsigned int extruder_dir = 0;
 
 void setup() {
   pinMode(8, OUTPUT);
@@ -78,8 +78,6 @@ if (!ModbusRTUServer.begin(8,921600,SERIAL_8N1)) {
 }
 void loop() {
   display.clearDisplay();
-  // poll for Modbus RTU requests****************************************************************
-  ModbusRTUServer.poll();
   delay (10);
   int bigByteSpd = ModbusRTUServer.holdingRegisterRead(771);
   //int lilByteSpd = ModbusRTUServer.holdingRegisterRead(772);
@@ -131,4 +129,6 @@ void loop() {
   display.display(); 
   
   //***********************************STEPPER**************************
+    // poll for Modbus RTU requests****************************************************************
+  ModbusRTUServer.poll();
 }
