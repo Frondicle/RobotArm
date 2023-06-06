@@ -52,7 +52,7 @@ static unsigned char PROGMEM const retract_glcd_bmp[] =
 #define stepPinStepper   9  // green wire
 #define stepsPerRevolution 200
 
-const int baudRate = 921600;
+const int baudRate = 115200;
 unsigned int extruder_speed = 0;
 unsigned int extruder_dir = 0;
 
@@ -67,35 +67,22 @@ void setup() {
     for(;;); // Don't proceed, loop forever
    }
 // start the Modbus RTU server, with (slave) id 8
-if (!ModbusRTUServer.begin(8,921600,SERIAL_8N1)) {
+if (!ModbusRTUServer.begin(8,115200,SERIAL_8N1)) {
     Serial.println("Failed to start Modbus RTU Server!");
     while (1);
     }
   // configure speed holding registers at address 
-  ModbusRTUServer.configureHoldingRegisters(771,1); 
-  // configure mode holding registers at address 256 / 0x0100
-  ModbusRTUServer.configureHoldingRegisters(256,1); 
+  ModbusRTUServer.configureHoldingRegisters(256,4); 
 }
 void loop() {
   display.clearDisplay();
-  delay (10);
-  int bigByteSpd = ModbusRTUServer.holdingRegisterRead(771);
-  //int lilByteSpd = ModbusRTUServer.holdingRegisterRead(772);
-  long x0 = (long)bigByteSpd<<8;
-  //long x1 = (long)lilByteSpd;
-
   
+  int spd = ModbusRTUServer.holdingRegisterRead(258);
+  int dir = ModbusRTUServer.holdingRegisterRead(256);
 
-  int bigByteDir = ModbusRTUServer.holdingRegisterRead(256);
-  //int lilByteDir = ModbusRTUServer.holdingRegisterRead(257);
-  long y0 = (long)bigByteDir<<8;
-  //long y1 = (long)lilByteDir;
-
-  extruder_speed = x0; //|x1;
-  Serial.println (extruder_speed);
-  extruder_dir = bigByteDir;
-  Serial.println (extruder_dir);
-  if (extruder_dir > 0){
+  extruder_speed = spd;
+  extruder_dir = dir;
+  if (extruder_dir > 10){
     digitalWrite(dirPinStepper, HIGH);
     display.clearDisplay();
     display.drawBitmap(4, 1,  extrude_glcd_bmp, 24, 7, 1);
