@@ -1,9 +1,11 @@
+//Extruder firmware 7/17/2023 Chris Morrey Gibbs College of Architecture 
+
 #include <SoftwareSerial.h>
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include "FlexyStepper.h"
+#include "FlexyStepper.h" // Documentation at: https://github.com/Stan-Reifel/FlexyStepper
 #include <ArduinoRS485.h> // ArduinoModbus depends on the ArduinoRS485 library
 #include <ArduinoModbus.h>
 
@@ -35,31 +37,32 @@ static unsigned char PROGMEM const retract_glcd_bmp[] =
   B00000000, B00011100, B00111000,
   B00000000, B00011000, B00110000};
 
-//Wasp extruder: 
-//200 steps = 1 rotation
-//Barrel diameter: 10mm 
-//area: 78.54mm2
-//Auger pitch: 7mm
-//549.78 mm3 : 1 rotation
-//Nozzle diameter: 2mm
-// Area: 3.14 mm2: 
-//1 rotation = 175.09mm long extrusion
-//1 step = .875mm long extrusion
+
 
 const int steps_per_revolution = 200;
 const int baudRate = 9600;
-unsigned int extruder_speed = 0;
-unsigned int extruder_dir = 0;
-int true_speed = 0;
+float move_in_millimeters = 0;
+int extruder_speed = 0;
+int dir = 0;
+float move_actual = 0;
+const float nozzle_diameter = 2; //mm
+//Wasp extruder 2mm nozzle: 
+int barrel_radius = 5; //millimeters 
+float barrel_area = (barrel_radius * 3.14159); //mm2
+int auger_pitch = 7; //mm
+float rotation_volume = (barrel_area * auger_pitch);
+float nozzle_area = ((nozzle_diameter / 2)*3.14159); //mm2: 
+float ext_length_per_revolution = rotation_volume / nozzle_area; //mm
+float ext_length_per_step = ext_length_per_revolution / steps_per_revolution;
 
-// initialize the stepper library on pins 8 through 11:
+// initialize the stepper library
 FlexyStepper stepper;
-
  
 void setup() {
   Serial.begin(baudRate);
   stepper.connectToPins(8,9);
-  stepper.setStepsPerMillimeter(.875);
+  stepper.setStepsPerMillimeter(ext_length_per_step);
+  stepper.setAccelerationInMillimetersPerSecondPerSecond(100);
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)){
     Serial.println(F("SSD1306 allocation failed"));
@@ -70,69 +73,45 @@ if (!ModbusRTUServer.begin(8,baudRate,SERIAL_8N1)) {
     Serial.println("Failed to start Modbus RTU Server!");
     while (1);
     }
-  // configure extruder speed and direction holding registers at address 200,201
-  ModbusRTUServer.configureHoldingRegisters(0x00,2); 
+  // configure extruder move, direction and speed holding registers at address 200,201,202
+  ModbusRTUServer.configureHoldingRegisters(0x00,3); 
 }
 void loop() {
+  bool stopFlag = false;
   ModbusRTUServer.poll();
   display.clearDisplay();
+
+  move_in_millimeters = ModbusRTUServer.holdingRegisterRead(0x00);
+  dir = ModbusRTUServer.holdingRegisterRead(0x01);
+  extruder_speed = ModbusRTUServer.holdingRegisterRead(0x02);
   
-  int spd = ModbusRTUServer.holdingRegisterRead(0x00);
-  int dir = ModbusRTUServer.holdingRegisterRead(0x01);
-  extruder_speed = spd;
-  extruder_dir = dir;
-  
-  if (extruder_dir > 10){
-    true_speed = extruder_speed;
+  if (dir > 0){
+    move_actual = move_in_millimeters;
     display.clearDisplay();
     display.drawBitmap(4, 1,  extrude_glcd_bmp, 24, 7, 1);
     display.setTextSize(1);      
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(5,9);  
     display.setTextSize(2);     
-    display.println(true_speed);
+    display.println(move_actual);
     display.display();
     }
   else {
-    true_speed = (extruder_speed * -1);
+    move_actual = (move_in_millimeters * -1);
     display.clearDisplay();
     display.drawBitmap(4, 1,  retract_glcd_bmp, 24, 7, 1);
     display.setTextSize(1);      
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(5,9);  
     display.setTextSize(2);     
-    display.println(true_speed);
+    display.println(move_actual);
     display.display();
-  }
- 
-  //display.clearDisplay();
-  //display.clearDisplay();
-  //display.setTextSize(1);      
-  //display.setTextColor(SSD1306_WHITE);
-  //display.setCursor(5,9);  
-  //display.setTextSize(2);     
-  //display.println(true_speed);
-  //display.display(); 
-  
   //***********************************STEPPER**************************
-  //
-  // setup the motor so that it will rotate 2000 steps, note: this 
-  // command does not start moving yet
-  //
-  //stepper.setTargetPositionInSteps(2000);
-  
-  //
-  // now execute the move, looping until the motor has finished
-  //
-  //while(!stepper.motionComplete())
-  //{
-    //stepper.processMovement();       // this call moves themotor
-    
-    //
-    // check if motor has moved past position 400, if so turn On the LED
-    //
-    //if (stepper.getCurrentPositionInSteps() == 400)
-    // digitalWrite(LED_PIN, HIGH);
-  //}
-    // poll for Modbus RTU requests****************************************************************
-}
+    stepper.setSpeedInMillimetersPerSecond(extruder_speed);
+    stepper.setTargetPositionRelativeInMillimeters(move_actual);
+    while(!stepper.motionComplete())
+    {
+    stepper.processMovement();
+    }
+  }
+} 
