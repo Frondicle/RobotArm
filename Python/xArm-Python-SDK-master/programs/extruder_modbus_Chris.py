@@ -4,7 +4,7 @@
 # Copyright (c) 2020, UFACTORY, Inc.
 # All rights reserved.
 #
-# Author: Vinman <vinman.wen@ufactory.cc> <vinman.cub@gmail.com>
+# Author: Vinman <vinman.wen@ufactory.cc> <vinman.cub@gmail.com> and Chris 
 
 """
 Example: Control the bio gripper through the modbus of the end tool
@@ -15,16 +15,14 @@ import sys
 import time
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../..'))
 
+#receive variables from RoboDK
+move = RDK.getParam('move')
 from xarm.wrapper import XArmAPI
 from configparser import ConfigParser
 parser = ConfigParser()
 parser.read('../robot.conf')
 try:
     ip = parser.get('xArm', 'ip')
-except:
-    ip = input('Please input the xArm ip address[192.168.1.196]:')
-    if not ip:
-        ip = '192.168.1.196'
 
 
 arm = XArmAPI(ip)
@@ -47,8 +45,8 @@ print('set_tgpio_modbus_baudrate, code={}'.format(code))
 time.sleep(1)
 
 
-while arm.connected and arm.error_code == 0:
-    ret = arm.core.tgpio_set_modbus(data_frame, len(data_frame))([0x08, 0x10, 0x00, 0x01, 0x00, 0x03, 0x06, 0x00, (move), 0x00, (dir), 0x00, (speed)]) #setup these variables as hex values
+data_frame = [0x08, 0x10, 0x00, 0x01, 0x00, 0x03, 0x06, 0x00, (move), 0x00, (dir), 0x00, (speed)]
+    ret = arm.core.tgpio_set_modbus(data_frame, len(data_frame)) #setup these variables as hex values
 
     time.sleep(2)
 
