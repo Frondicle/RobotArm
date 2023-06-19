@@ -6,8 +6,7 @@
 #
 # Author: Vinman <vinman.wen@ufactory.cc> <vinman.cub@gmail.com>
 
-sys.path.append("C:\\Users\\morr0289\\Documents\\ Github\\RobotArm\\Python\\xArm-Python-SDK-master")#be sure to change if we move this whole folder into a roboDK folder
-
+sys.path.append("C:\\Users\\morr0289\\Documents\\Github\\RobotArm\\Python\\xArm-Python-SDK-master")
 from ..x3 import xarm, studio
 
 
