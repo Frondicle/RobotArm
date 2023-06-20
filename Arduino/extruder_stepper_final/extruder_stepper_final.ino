@@ -38,15 +38,18 @@ static unsigned char PROGMEM const retract_glcd_bmp[] =
   B00000000, B00011000, B00110000};
 
 
-
 const int steps_per_revolution = 200;
 const int baudRate = 9600;
-float move_in_millimeters = 0;
-int extruder_speed = 0;
-int dir = 0;
+byte move_received[2]; // registers 200,201
+byte speed_received[2]; // registers 204,205
+byte dir_received = [2]; // registers 202,203
+float move_converted = 0;
+int dir_converted = 0;
+float speed_converted = 0;
 float move_actual = 0;
 const float nozzle_diameter = 2; //mm
-//Wasp extruder 2mm nozzle: 
+
+//Wasp extruder 2mm nozzle sizes---------------------------------------------------
 int barrel_radius = 5; //millimeters 
 float barrel_area = (barrel_radius * 3.14159); //mm2
 int auger_pitch = 7; //mm
@@ -73,17 +76,20 @@ if (!ModbusRTUServer.begin(8,baudRate,SERIAL_8N1)) {
     Serial.println("Failed to start Modbus RTU Server!");
     while (1);
     }
-  // configure extruder move, direction and speed holding registers at address 200,201,202
-  ModbusRTUServer.configureHoldingRegisters(0x00,3); 
+  // configure extruder move, direction and speed holding registers at address 200 thru 205
+  ModbusRTUServer.configureHoldingRegisters(0xC8,6); 
 }
 void loop() {
   bool stopFlag = false;
   ModbusRTUServer.poll();
   display.clearDisplay();
 
-  move_in_millimeters = ModbusRTUServer.holdingRegisterRead(0x00);
-  dir = ModbusRTUServer.holdingRegisterRead(0x01);
-  extruder_speed = ModbusRTUServer.holdingRegisterRead(0x02);
+  move_received = ModbusRTUServer.holdingRegisterRead(0xC8,0xC9); //registers 200, 201
+  dir_received = ModbusRTUServer.holdingRegisterRead(0xCA,0xCB);//registers 202,203
+  speed_received = ModbusRTUServer.holdingRegisterRead(0xCC,0xCD); ///registers 204,205
+
+  //Convert bytes to floats and integers
+
   
   if (dir > 0){
     move_actual = move_in_millimeters;

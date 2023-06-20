@@ -13,7 +13,7 @@ Example: Control the bio gripper through the modbus of the end tool
 import os
 import sys
 import time
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../..'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../..'))#is this path correct
 
 #receive variables from RoboDK
 move = RDK.getParam('move')
@@ -40,12 +40,13 @@ code = arm.set_tgpio_modbus_timeout(20)
 print('set_tgpio_modbus_timeout, code={}'.format(code))
 
 # set tool gpio modbus baudrate
-code = arm.set_tgpio_modbus_baudrate(115200)
+code = arm.set_tgpio_modbus_baudrate(9600)
 print('set_tgpio_modbus_baudrate, code={}'.format(code))
 time.sleep(1)
 
+#convert passed params to hex
 
-data_frame = [0x08, 0x10, 0x00, 0x01, 0x00, 0x03, 0x06, 0x00, (move), 0x00, (dir), 0x00, (speed)]
+data_frame = [0x08, 0x10, 0x00, 0x01, 0x00, 0x03, 0x06, 0x00, (hexmove), 0x00, (hexdir), 0x00, (hexspeed)]#write three variables into holding registers at 200,201,202
     ret = arm.core.tgpio_set_modbus(data_frame, len(data_frame)) #setup these variables as hex values
 
     time.sleep(2)
