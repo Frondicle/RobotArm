@@ -4,11 +4,11 @@ import time
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../..'))
 
 # Receive variables from RoboDK
-move = RDK.getParam('move')  # Make sure the 'move' parameter is set correctly in RoboDK
-dir = RDK.getParam('dir')    # Make sure the 'dir' parameter is set correctly in RoboDK
-speed = RDK.getParam('speed')  # Make sure the 'speed' parameter is set correctly in RoboDK
+#move = RDK.getParam('move')  # Make sure the 'move' parameter is set correctly in RoboDK
+#dir = RDK.getParam('dir')    # Make sure the 'dir' parameter is set correctly in RoboDK
+#speed = RDK.getParam('speed')  # Make sure the 'speed' parameter is set correctly in RoboDK
 
-from xarm.wrapper import XArmAPI
+from xarm.wrapper import xarm_api
 from configparser import ConfigParser
 
 parser = ConfigParser()
@@ -20,7 +20,7 @@ except:
     print("Failed to read IP from robot.conf")
     sys.exit(0)
 
-arm = XArmAPI(ip)
+arm = xarm_api(ip)
 time.sleep(0.5)
 
 if arm.warn_code != 0:
