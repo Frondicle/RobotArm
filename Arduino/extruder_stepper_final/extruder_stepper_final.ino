@@ -40,14 +40,18 @@ static unsigned char PROGMEM const retract_glcd_bmp[] =
 
 const int steps_per_revolution = 200;
 const int baudRate = 9600;
-byte move_received[2]; // registers 200,201
-byte speed_received[2]; // registers 204,205
-byte dir_received = [2]; // registers 202,203
-float move_converted = 0;
-int dir_converted = 0;
-float speed_converted = 0;
-float move_actual = 0;
-const float nozzle_diameter = 2; //mm
+uint8_t move_received[2]; // registers 200,201
+uint8_t speed_received[2]; // registers 202,203
+byte dir_received = 0; // coil 101
+int extruder_ready = 0; //coil 100
+uint16_t move_temp = 0;
+uint16_t speed_temp = 0;
+float move_converted = 0.0;
+float speed_converted = 0.0;
+float move_actual = 0.0;
+int stepper_movement = 0;
+const float nozzle_diameter = 2.0; //mm
+
 
 //Wasp extruder 2mm nozzle sizes---------------------------------------------------
 int barrel_radius = 5; //millimeters 
@@ -57,14 +61,23 @@ float rotation_volume = (barrel_area * auger_pitch);
 float nozzle_area = ((nozzle_diameter / 2)*3.14159); //mm2: 
 float ext_length_per_revolution = rotation_volume / nozzle_area; //mm
 float ext_length_per_step = ext_length_per_revolution / steps_per_revolution;
-
+int i=0;
 // initialize the stepper library
 FlexyStepper stepper;
- 
+
+void readyToGo(){
+    move_received[0,1] = 0,0;  
+    speed_received[0,1] = 0,0;
+    move_converted = 0;
+    speed_converted = 0;
+    move_actual = 0;
+    ModbusRTUServer.coilWrite(100,1);
+    i=i+1;
+}
 void setup() {
   Serial.begin(baudRate);
   stepper.connectToPins(8,9);
-  stepper.setStepsPerMillimeter(ext_length_per_step);
+  stepper.setStepsPerMillimeter(3);//(ext_length_per_step);
   stepper.setAccelerationInMillimetersPerSecondPerSecond(100);
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)){
@@ -76,48 +89,66 @@ if (!ModbusRTUServer.begin(8,baudRate,SERIAL_8N1)) {
     Serial.println("Failed to start Modbus RTU Server!");
     while (1);
     }
-  // configure extruder move, direction and speed holding registers at address 200 thru 205
-  ModbusRTUServer.configureHoldingRegisters(0xC8,6); 
+  // configure extruder move and speed holding registers at address 200 thru 203
+  ModbusRTUServer.configureHoldingRegisters(200,4); 
+  ModbusRTUServer.configureCoils(100,2);
 }
 void loop() {
-  bool stopFlag = false;
-  ModbusRTUServer.poll();
-  display.clearDisplay();
-
-  move_received = ModbusRTUServer.holdingRegisterRead(0xC8,0xC9); //registers 200, 201
-  dir_received = ModbusRTUServer.holdingRegisterRead(0xCA,0xCB);//registers 202,203
-  speed_received = ModbusRTUServer.holdingRegisterRead(0xCC,0xCD); ///registers 204,205
-
-  //Convert bytes to floats and integers
-
   
-  if (dir > 0){
-    move_actual = move_in_millimeters;
+  bool stopFlag = false;
+  //readyToGo();
+  ModbusRTUServer.poll();
+
+
+  extruder_ready = ModbusRTUServer.coilRead (100);//coil 100
+  dir_received = ModbusRTUServer.coilRead (101);//coil 101
+  move_received[0] = ModbusRTUServer.holdingRegisterRead(200);//least significant bit: little-endian
+  move_received[1] = ModbusRTUServer.holdingRegisterRead(201);
+  speed_received[0] = ModbusRTUServer.holdingRegisterRead (202);//least significant bit: little-endian
+  speed_received[1] = ModbusRTUServer.holdingRegisterRead (203);
+
+  move_temp = move_received[0];
+  move_temp <<= 8;
+  move_temp = (move_temp | move_received[1]);
+  move_converted = ((float)move_temp/100);
+
+  speed_temp = speed_received[0];
+  speed_temp <<= 8;
+  speed_temp = (speed_temp | speed_received[1]);
+  speed_converted = ((float)speed_temp/100);
+  
+  if (dir_received == 1){
+    move_actual = move_converted;
     display.clearDisplay();
-    display.drawBitmap(4, 1,  extrude_glcd_bmp, 24, 7, 1);
-    display.setTextSize(1);      
+    display.drawBitmap(4, 1,  extrude_glcd_bmp, 24, 7, 1);    
     display.setTextColor(SSD1306_WHITE);
-    display.setCursor(5,9);  
-    display.setTextSize(2);     
+    display.setCursor(1,9);  
+    display.setTextSize(1);     
     display.println(move_actual);
+    display.println(speed_converted);
     display.display();
     }
   else {
-    move_actual = (move_in_millimeters * -1);
+    move_actual = (move_converted * -1);
     display.clearDisplay();
-    display.drawBitmap(4, 1,  retract_glcd_bmp, 24, 7, 1);
-    display.setTextSize(1);      
+    display.drawBitmap(4, 1,  retract_glcd_bmp, 24, 7, 1);     
     display.setTextColor(SSD1306_WHITE);
-    display.setCursor(5,9);  
-    display.setTextSize(2);     
+    display.setCursor(1,9);  
+    display.setTextSize(1);     
     display.println(move_actual);
+    display.println(speed_converted);
     display.display();
   //***********************************STEPPER**************************
-    stepper.setSpeedInMillimetersPerSecond(extruder_speed);
-    stepper.setTargetPositionRelativeInMillimeters(move_actual);
-    while(!stepper.motionComplete())
-    {
-    stepper.processMovement();
-    }
+    stepper.setSpeedInMillimetersPerSecond(speed_converted);
+    //stepper.setTargetPositionRelativeInMillimeters(move_actual);
+    ModbusRTUServer.coilWrite(100,0);
+    stepper.moveRelativeInMillimeters(move_actual);
+    //while(!stepper.motionComplete())
+    //{
+     // stepper.processMovement();
+    //  
+    //}
+   display.print(stepper.getCurrentPositionInMillimeters());
+   display.display();
   }
 } 
