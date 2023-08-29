@@ -46,7 +46,10 @@ time.sleep(1)
 
 #convert passed params to hex
 
-data_frame = [0x08, 0x10, 0x00, 0x01, 0x00, 0x03, 0x06, 0x00, (hexmove), 0x00, (hexdir), 0x00, (hexspeed)]#write three variables into holding registers at 200,201,202
+#write three variables into holding registers: 
+# the float, 'move' is at addresses 200,201  at 200,201,202
+data_frame = [0x08, 0x10, 0x00, 0x01, 0x00, 0x03, 0x06, 0x00, (hexmove), 0x00, (hexdir), 0x00, (hexspeed)]
+
     ret = arm.core.tgpio_set_modbus(data_frame, len(data_frame)) #setup these variables as hex values
 
     time.sleep(2)

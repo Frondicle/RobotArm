@@ -1,6 +1,6 @@
 //Extruder firmware 7/17/2023 Chris Morrey Gibbs College of Architecture 
 
-#include <SoftwareSerial.h>
+//#include <SoftwareSerial.h>
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -37,12 +37,12 @@ static unsigned char PROGMEM const retract_glcd_bmp[] =
   B00000000, B00011100, B00111000,
   B00000000, B00011000, B00110000};
 
-
+const int enablePin = 10;
 const int steps_per_revolution = 200;
 const int baudRate = 9600;
 uint8_t move_received[2]; // registers 200,201
 uint8_t speed_received[2]; // registers 202,203
-byte dir_received = 0; // coil 101
+int dir_received = 0; // coil 101
 int extruder_ready = 0; //coil 100
 uint16_t move_temp = 0;
 uint16_t speed_temp = 0;
@@ -56,7 +56,7 @@ const float nozzle_diameter = 2.0; //mm
 //Wasp extruder 2mm nozzle sizes---------------------------------------------------
 int barrel_radius = 5; //millimeters 
 float barrel_area = (barrel_radius * 3.14159); //mm2
-int auger_pitch = 7; //mm
+float auger_pitch = 7.15; //mm
 float rotation_volume = (barrel_area * auger_pitch);
 float nozzle_area = ((nozzle_diameter / 2)*3.14159); //mm2: 
 float ext_length_per_revolution = rotation_volume / nozzle_area; //mm
@@ -76,7 +76,7 @@ void readyToGo(){
 }
 void setup() {
   Serial.begin(baudRate);
-  stepper.connectToPins(8,9);
+  stepper.connectToPins(8,9); //step, direction
   stepper.setStepsPerMillimeter(3);//(ext_length_per_step);
   stepper.setAccelerationInMillimetersPerSecondPerSecond(100);
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
@@ -84,8 +84,8 @@ void setup() {
     Serial.println(F("SSD1306 allocation failed"));
     for(;;); // Don't proceed, loop forever
    }
-// start the Modbus RTU server, with (slave) id 8 
-if (!ModbusRTUServer.begin(8,baudRate,SERIAL_8N1)) {
+// start the Modbus RTU server, with (slave) id 9 
+if (!ModbusRTUServer.begin(9,baudRate,SERIAL_8N1)) {
     Serial.println("Failed to start Modbus RTU Server!");
     while (1);
     }
@@ -94,11 +94,10 @@ if (!ModbusRTUServer.begin(8,baudRate,SERIAL_8N1)) {
   ModbusRTUServer.configureCoils(100,2);
 }
 void loop() {
-  
-  bool stopFlag = false;
-  //readyToGo();
-  ModbusRTUServer.poll();
 
+  bool stopFlag = false;
+  readyToGo();
+  ModbusRTUServer.poll();
 
   extruder_ready = ModbusRTUServer.coilRead (100);//coil 100
   dir_received = ModbusRTUServer.coilRead (101);//coil 101
@@ -126,6 +125,7 @@ void loop() {
     display.setTextSize(1);     
     display.println(move_actual);
     display.println(speed_converted);
+    display.println(i);
     display.display();
     }
   else {
@@ -133,22 +133,23 @@ void loop() {
     display.clearDisplay();
     display.drawBitmap(4, 1,  retract_glcd_bmp, 24, 7, 1);     
     display.setTextColor(SSD1306_WHITE);
-    display.setCursor(1,9);  
+    display.setCursor(1,9); 
     display.setTextSize(1);     
     display.println(move_actual);
     display.println(speed_converted);
+    display.println(stepper.getCurrentPositionInSteps());
+    display.println(i);
     display.display();
   //***********************************STEPPER**************************
-    stepper.setSpeedInMillimetersPerSecond(speed_converted);
-    //stepper.setTargetPositionRelativeInMillimeters(move_actual);
+    digitalWrite(enablePin, HIGH);
+    stepper.setSpeedInRevolutionsPerSecond(speed_converted);
+    stepper.setTargetPositionRelativeInRevolutions(move_actual);
     ModbusRTUServer.coilWrite(100,0);
-    stepper.moveRelativeInMillimeters(move_actual);
-    //while(!stepper.motionComplete())
-    //{
-     // stepper.processMovement();
-    //  
-    //}
-   display.print(stepper.getCurrentPositionInMillimeters());
-   display.display();
+    //stepper.moveRelativeInRevolutions(move_actual);
+    while(!stepper.motionComplete())
+    {
+    stepper.processMovement(); 
+    }
+
   }
 } 
