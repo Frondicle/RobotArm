@@ -10,7 +10,7 @@ import math
 sys.path.append("C:\\Users\\morr0289\\Documents\\Github\\RobotArm\\Python\\")
 
 from arm_sdk2.xarm.wrapper.xarm_api import XArmAPI
-arm = XArmAPI(192.168.1.196)
+arm = XArmAPI('192.168.1.196')
 def sender(port,length,speed):
     code, ret = arm.getset_tgpio_modbus_data(['port', 0x10, 0x00, 0xc8, 0x00, 0x04, 0x08, 0x00, 'length','speed'],is_transparent_transmission=True)
 

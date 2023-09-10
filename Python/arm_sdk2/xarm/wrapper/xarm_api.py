@@ -6,7 +6,7 @@
 #
 # Author: Vinman <vinman.wen@ufactory.cc> <vinman.cub@gmail.com>
 
-from ..x3 import XArm, Studio
+from ..x3 import xarm, studio
 
 
 class XArmAPI(object):
@@ -80,12 +80,12 @@ class XArmAPI(object):
             check_is_ready: check if the arm is ready to move or not, default is True
                 Note: only available if firmware_version < 1.5.20
         """
-        self._arm = XArm(port=port,
+        self._arm = xarm.XArm(port=port,
                          is_radian=is_radian,
                          do_not_open=do_not_open,
                          instance=self,
                          **kwargs)
-        self._studio = Studio(port, True)
+        self._studio = studio.Studio(port, True)
         self.__attr_alias_map = {
             'get_ik': self.get_inverse_kinematics,
             'get_fk': self.get_forward_kinematics,

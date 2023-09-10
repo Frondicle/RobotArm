@@ -16,13 +16,13 @@ import time
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../..'))
 
-from xarm.wrapper import XArmAPI
+from xarm.wrapper.xarm_api import XArmAPI
 
 
 #######################################################
 """
 Just for test example
-"""
+
 if len(sys.argv) >= 2:
     ip = sys.argv[1]
 else:
@@ -36,10 +36,11 @@ else:
         if not ip:
             print('input error, exit')
             sys.exit(1)
+            """
 ########################################################
 
 
-arm = XArmAPI(ip)
+arm = XArmAPI('192.168.1.196')
 arm.motion_enable(enable=True)
 arm.set_mode(0)
 arm.set_state(state=0)

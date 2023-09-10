@@ -1,13 +1,13 @@
+
+
 //Extruder firmware 7/17/2023 Chris Morrey Gibbs College of Architecture 
 
-//#include <SoftwareSerial.h>
+#include <ModbusRtu.h>
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include "FlexyStepper.h" // Documentation at: https://github.com/Stan-Reifel/FlexyStepper
-#include <ArduinoRS485.h> // ArduinoModbus depends on the ArduinoRS485 library
-#include <ArduinoModbus.h>
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 32 // OLED display height, in pixels
@@ -40,6 +40,7 @@ static unsigned char PROGMEM const retract_glcd_bmp[] =
 const int enablePin = 10;
 const int steps_per_revolution = 200;
 const int baudRate = 9600;
+uint16_t modTimeOut = 1000;
 unsigned int move_received[2] = {0,0}; // registers 200,201
 unsigned int ext_speed_received[2] = {0,0}; // registers 202,203
 unsigned int dir_received = 0x01; // register 204, start forward
@@ -54,8 +55,6 @@ float arm_speed_converted = 0.0;
 float move_actual = 0.0;
 int stepper_movement = 0;
 const float nozzle_diameter = 2.0; //mm
-int modinfosbig = 0;
-int modinfoslittle = 0;
 
 //Wasp extruder 2mm nozzle sizes---------------------------------------------------
 int barrel_radius = 5; //millimeters 
@@ -66,8 +65,23 @@ float nozzle_area = ((nozzle_diameter / 2)*3.14159); //mm2:
 float ext_length_per_revolution = rotation_volume / nozzle_area; //mm
 float ext_length_per_step = ext_length_per_revolution / steps_per_revolution;
 int i=0;
+#define TXEN 6
+
 // initialize the stepper library
 FlexyStepper stepper;
+
+
+// data array for modbus network sharing
+uint16_t au16data[] = {
+  200, 201, 202, 203, 204, 205, 206, 207 };
+/**
+ *  Modbus object declaration
+ *  u8id : node id = 0 for master, = 1..247 for slave
+ *  port : serial port
+ *  u8txenpin : 0 for RS-232 and USB-FTDI 
+ *               or any pin number > 1 for RS-485
+ */
+Modbus slave(9,Serial1,TXEN); // this is slave @9 and RS-485 on pin 6
 
 void readyToGo(){
     move_received[0] = {0};
@@ -78,10 +92,10 @@ void readyToGo(){
     arm_speed_received [0]= {0};
     arm_speed_received [1]= {0};
     move_actual = 0.0;
-    ModbusRTUServer.coilWrite(204,1);
+    // WRITE 1 TO REGISTER 205 HERE*****************************************************************************************************************
     i=i+1;
 }
-//##################### was here below #############
+
 float hexconvert(int modinfosbig, int modinfoslittle){
     int big = modinfosbig;
     big <<= 8;
@@ -92,7 +106,7 @@ float hexconvert(int modinfosbig, int modinfoslittle){
   
 void setup() {
   pinMode(10,OUTPUT);
-  Serial.begin(baudRate);
+  Serial1.begin(baudRate);
   stepper.connectToPins(8,9); //step, direction
   stepper.setStepsPerMillimeter(3);//(ext_length_per_step);
   stepper.setAccelerationInMillimetersPerSecondPerSecond(100);
@@ -102,53 +116,31 @@ void setup() {
     for(;;); // Don't proceed, loop forever
    }
  
-if (!ModbusRTUServer.begin(9,baudRate,SERIAL_8N1)) {  // start the Modbus RTU server, with id 9
-    display.clearDisplay();  
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(1,9);  
-    display.setTextSize(1);     
-    display.println("No Modbus!");
-    display.display();
-    while (1);
-    }
+slave.start();
+slave.setTimeOut(modTimeOut);
+
 display.clearDisplay();  
 display.setTextColor(SSD1306_WHITE);
 display.setCursor(1,9);  
 display.setTextSize(1);     
 display.println("All set, boss");
 display.display();
-
 delay(2000);
-
-  // configure extruder move, speed and direction holding registers at address 200 thru 209
-  // 200,201: movement | 202,203: speed |  204: direction  | 205: extruder ready flag  | 206,207: arm speed  | 208,209: spare
-  ModbusRTUServer.configureHoldingRegisters(200,10);
 }
 
 void loop() {
 
   bool stopFlag = false;
   readyToGo();
-  ModbusRTUServer.poll();
-
-  extruder_ready = ModbusRTUServer.holdingRegisterRead(205);
-  dir_received = ModbusRTUServer.holdingRegisterRead(204);
-  move_received[0] = ModbusRTUServer.holdingRegisterRead(200);//least significant bit: little-endian
-  move_received[1] = ModbusRTUServer.holdingRegisterRead(201);
-  ext_speed_received[0] = ModbusRTUServer.holdingRegisterRead (202);//least significant bit: little-endian
-  ext_speed_received[1] = ModbusRTUServer.holdingRegisterRead (203);
-  arm_speed_received[0] = ModbusRTUServer.holdingRegisterRead (206);//least significant bit: little-endian
-  arm_speed_received[1] = ModbusRTUServer.holdingRegisterRead (207);
-  
-  //move_temp = move_received[0];
-  //move_temp <<= 8;
-  //move_temp = (move_temp | move_received[1]);
-  //move_converted = ((float)move_temp/100);
-
-  //speed_temp = ext_speed_received[0];
-  //speed_temp <<= 8;
-  //speed_temp = (speed_temp | ext_speed_received[1]);
-  //ext_speed_received = ((float)speed_temp/100);
+  int8_t registers[] = {slave.poll( au16data, 8 )};
+  extruder_ready = registers[6]; //205
+  dir_received = registers[5];//204
+  move_received[0] = registers[0];//200
+  move_received[1] = registers[1];//201
+  ext_speed_received[0] = registers[2];//202 least significant bit: little-endian
+  ext_speed_received[1] = registers[3]; //(203)
+  arm_speed_received[0] = registers[6]; //(206)least significant bit: little-endian
+  arm_speed_received[1] = registers[7];//(207);
   
   if (dir_received == 1){
     move_actual = hexconvert(move_received[0],move_received[1]);
@@ -159,7 +151,7 @@ void loop() {
     display.setTextSize(1);     
     display.println(move_actual);
     display.println(ext_speed_converted);
-    display.println(i);
+        display.println(stepper.getCurrentPositionInMillimeters());
     display.display();
     }
   else {
@@ -179,7 +171,7 @@ void loop() {
     digitalWrite(enablePin, HIGH);
     stepper.setSpeedInMillimetersPerSecond(ext_speed_converted);
     stepper.moveRelativeInMillimeters(move_actual);
-    ModbusRTUServer.holdingRegisterWrite(205,0);
+    //WRITE TO REGISTER 205 HERE: 0 for busy;
     while(!stepper.motionComplete()){
       stepper.processMovement(); 
       }

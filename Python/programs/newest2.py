@@ -11,27 +11,27 @@ import time
 
 sys.path.append("C:\\Users\\morr0289\\Documents\\Github\\RobotArm\\Python\\")
 
-from ..arm_sdk2.xarm.wrapper.xarm_api import XArmAPI
+from arm_sdk2.xarm.wrapper.xarm_api import XArmAPI
 
 arm = XArmAPI('192.168.1.196', is_radian=False, do_not_open=False)
 
 def sender(port,length,speed):
     hport = hex(port)
     hlength = hex(length)
-    bytelength = bytes(length)
+    bytelength = makebytes(length)
     hspeed = hex(speed)
-    bytespeed = bytes(speed)
+    bytespeed = makebytes(speed)
     code, ret = arm.getset_tgpio_modbus_data([hport,0x10,0x00,0xc8,0x00,0x04,0x08,0x00,bytelength,bytespeed],is_transparent_transmission=True)
 
 #def bytes(integer):
     #return divmod(integer, 0x100)
 
-#def bytes(num):
-#    return hex(num >> 8), hex(num & 0xFF)
+def makebytes(num):
+    return hex(num >> 8), hex(num & 0xFF)
 
-def bytes(num):
-    split = ("0x%2x 0x%2x\n" % tuple(struct.pack('<H',num)))# a bytes object
-    return split
+#def makebytes(num):
+    #split = ("0x%2x 0x%2x\n" % tuple(struct.pack('<H',num)))# a bytes object
+    #return split
 
 arm.motion_enable(enable=True)
 arm.set_mode(0)
