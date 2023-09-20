@@ -38,17 +38,19 @@ static unsigned char PROGMEM const retract_glcd_bmp[] =
   B00000000, B00011000, B00110000};
 
 const int enablePin = 10;
+const int readyPin = 4;
+const int comPin = 6;
 const int steps_per_revolution = 200;
 const int baudRate = 9600;
 uint16_t modTimeOut = 1000;
 unsigned int move_received[2] = {0,0}; // registers 200,201
 unsigned int ext_speed_received[2] = {0,0}; // registers 202,203
 unsigned int dir_received = 0x01; // register 204, start forward
-unsigned int extruder_ready = 0; //register 205
+unsigned int extruder_ready = 0; 
 unsigned int arm_speed_received[2] = {0,0}; //registers 206,207
-uint16_t move_temp = 0x0000;
-uint16_t ext_speed_temp = 0x0000;
-uint16_t arm_speed_temp = 0x0000;
+//uint16_t move_temp = 0x0000;
+//uint16_t ext_speed_temp = 0x0000;
+//uint16_t arm_speed_temp = 0x0000;
 float move_converted = 0.0;
 float ext_speed_converted = 0.0;
 float arm_speed_converted = 0.0;
@@ -65,7 +67,7 @@ float nozzle_area = ((nozzle_diameter / 2)*3.14159); //mm2:
 float ext_length_per_revolution = rotation_volume / nozzle_area; //mm
 float ext_length_per_step = ext_length_per_revolution / steps_per_revolution;
 int i=0;
-#define TXEN 6
+#define TxEnPin 5
 
 // initialize the stepper library
 FlexyStepper stepper;
@@ -73,7 +75,7 @@ FlexyStepper stepper;
 
 // data array for modbus network sharing
 uint16_t au16data[] = {
-  200, 201, 202, 203, 204, 205, 206, 207 };
+  200,201,202,203,204,205,206,207 };
 /**
  *  Modbus object declaration
  *  u8id : node id = 0 for master, = 1..247 for slave
@@ -81,7 +83,7 @@ uint16_t au16data[] = {
  *  u8txenpin : 0 for RS-232 and USB-FTDI 
  *               or any pin number > 1 for RS-485
  */
-Modbus slave(9,Serial1,TXEN); // this is slave @9 and RS-485 on pin 6
+Modbus slave(9,Serial,TxEnPin); // this is slave @9 and RS-485 on pin 5
 
 void readyToGo(){
     move_received[0] = {0};
@@ -92,7 +94,7 @@ void readyToGo(){
     arm_speed_received [0]= {0};
     arm_speed_received [1]= {0};
     move_actual = 0.0;
-    // WRITE 1 TO REGISTER 205 HERE*****************************************************************************************************************
+    digitalWrite(readyPin,HIGH);
     i=i+1;
 }
 
@@ -106,9 +108,10 @@ float hexconvert(int modinfosbig, int modinfoslittle){
   
 void setup() {
   pinMode(10,OUTPUT);
-  Serial1.begin(baudRate);
+  pinMode(4,OUTPUT);
+  Serial.begin(baudRate,SERIAL_8N1);
   stepper.connectToPins(8,9); //step, direction
-  stepper.setStepsPerMillimeter(3);//(ext_length_per_step);
+  stepper.setStepsPerMillimeter(3);//(ext_length_per_step)
   stepper.setAccelerationInMillimetersPerSecondPerSecond(100);
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)){
@@ -133,8 +136,7 @@ void loop() {
   bool stopFlag = false;
   readyToGo();
   int8_t registers[] = {slave.poll( au16data, 8 )};
-  extruder_ready = registers[6]; //205
-  dir_received = registers[5];//204
+  dir_received = registers[4];//204
   move_received[0] = registers[0];//200
   move_received[1] = registers[1];//201
   ext_speed_received[0] = registers[2];//202 least significant bit: little-endian
@@ -151,7 +153,7 @@ void loop() {
     display.setTextSize(1);     
     display.println(move_actual);
     display.println(ext_speed_converted);
-        display.println(stepper.getCurrentPositionInMillimeters());
+    display.println(stepper.getCurrentPositionInMillimeters());
     display.display();
     }
   else {
@@ -171,8 +173,8 @@ void loop() {
     digitalWrite(enablePin, HIGH);
     stepper.setSpeedInMillimetersPerSecond(ext_speed_converted);
     stepper.moveRelativeInMillimeters(move_actual);
-    //WRITE TO REGISTER 205 HERE: 0 for busy;
     while(!stepper.motionComplete()){
+      digitalWrite(readyPin,LOW);
       stepper.processMovement(); 
       }
   }

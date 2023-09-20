@@ -8,6 +8,7 @@ import os
 import struct
 import sys
 import time
+import json
 
 sys.path.append("C:\\Users\\morr0289\\Documents\\Github\\RobotArm\\Python\\")
 
@@ -15,26 +16,34 @@ from arm_sdk2.xarm.wrapper.xarm_api import XArmAPI
 
 arm = XArmAPI('192.168.1.196', is_radian=False, do_not_open=False)
 
-def sender(port,length,speed):
-    hport = hex(port)
-    hlength = hex(length)
-    bytelength = makebytes(length)
-    hspeed = hex(speed)
-    bytespeed = makebytes(speed)
-    code, ret = arm.getset_tgpio_modbus_data([hport,0x10,0x00,0xc8,0x00,0x04,0x08,0x00,bytelength,bytespeed],is_transparent_transmission=True)
+def readycheck():
+    while arm.connected and arm.error_code != 19 and arm.error_code != 28:
+        code, digitals = arm.get_tgpio_digital()
+        if code == 0:
+            if digitals[0] == 1:
+                return True
+            else:
+                return False
 
-#def bytes(integer):
-    #return divmod(integer, 0x100)
+def sender(port,length,speed):
+    readyflag = readycheck()
+    if readyflag == True:
+        hport = hex(port)
+        hlength = hex(length)
+        bytelength = makebytes(length)
+        hspeed = hex(speed)
+        bytespeed = makebytes(speed)
+        code, ret = arm.getset_tgpio_modbus_data([hport,0x10,0x00,0xc8,0x00,0x04,0x08,0x00,bytelength,bytespeed],is_transparent_transmission=True)
 
 def makebytes(num):
     return hex(num >> 8), hex(num & 0xFF)
 
-#def makebytes(num):
-    #split = ("0x%2x 0x%2x\n" % tuple(struct.pack('<H',num)))# a bytes object
-    #return split
-
+last_digitals = [-1, -1]
 arm.motion_enable(enable=True)
 arm.set_mode(0)
+
+arm.set_tcp_offset(0, 0, 110, roll_offset(° or rad), pitch_offset(° or rad), yaw_offset(° or rad)])
+arm.set_tcp_load([weight(kg), [x(mm), y(mm), z(mm)]])
 
 port = 9
 arm.set_state(state=0)

@@ -1,0 +1,12 @@
+extruder:
+{baudRate
+ip
+tcpLoadKG
+tcpLoadOffsetX
+tcpLoadOffsetY
+tcpLoadOffsetZ
+
+tcpOffsetX
+tcpOffsetY
+tcpOffsetZ
+}
