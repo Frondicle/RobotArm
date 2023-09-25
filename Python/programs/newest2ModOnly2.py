@@ -12,13 +12,26 @@ sys.path.append("C:\\Users\\morr0289\\Documents\\Github\\RobotArm\\Python\\")
 
 from arm_sdk2.xarm.wrapper.xarm_api import XArmAPI
 arm = XArmAPI('192.168.1.196', is_radian=False, do_not_open=False)
+
+if arm.warn_code != 0:
+    arm.clean_warn()
+if arm.error_code != 0:
+    arm.clean_error()
+
 def sender(*mod):
-    code, ret = arm.getset_tgpio_modbus_data([mod[0],mod[1],mod[2],mod[3],mod[4],mod[5],mod[6],mod[7],mod[8],mod[9],mod[10],mod[11]],is_transparent_transmission=True)
-    print(mod[0],mod[1],mod[2],mod[3],mod[4],mod[5],mod[6],mod[7],mod[8],mod[9],mod[10],mod[11])
+    #if xArm TI0 is High, then send modbus data 
+    while arm.connected and arm.error_code != 19 and arm.error_code != 28:
+        code, digitals = arm.get_tgpio_digital()
+        if code == 0:
+            if digitals[1] == 0
+                break
+            if digitals[0] == 1
+                code, ret = arm.getset_tgpio_modbus_data([mod[0],mod[1],mod[2],mod[3],mod[4],mod[5],mod[6],mod[7],mod[8],mod[9],mod[10],mod[11]],is_transparent_transmission=True)
+                print(mod[0],mod[1],mod[2],mod[3],mod[4],mod[5],mod[6],mod[7],mod[8],mod[9],mod[10],mod[11])
+        last_digitals = digitals
+    
 
 #0x09,0x10,0x00,0xc8,0x00,0x04,0x08,0x00,bytelength,bytespeed
-
-
 
 ret = arm.core.set_modbus_baudrate(9600)
 print('set modbus baudrate, ret = %d' % (ret[0]))
@@ -26,6 +39,7 @@ time.sleep(2)
 
 arm.motion_enable(enable=True)
 arm.set_mode(0)
+last_digitals = [-1, -1]
 
 port = 9
 arm.set_state(state=0)

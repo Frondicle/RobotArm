@@ -39,7 +39,7 @@ static unsigned char PROGMEM const retract_glcd_bmp[] =
 
 const int enablePin = 10;
 const int steps_per_revolution = 200;
-const int baudRate = 9600;
+const int baudRate = 115200;//9600,38400,115200,etc
 unsigned int move_received[2] = {0,0}; // registers 200,201
 unsigned int ext_speed_received[2] = {0,0}; // registers 202,203
 unsigned int dir_received = 0x01; // register 204, start forward

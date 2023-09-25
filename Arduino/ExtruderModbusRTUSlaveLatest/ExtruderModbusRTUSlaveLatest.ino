@@ -1,29 +1,6 @@
 /*
   ModbusRTUSlaveExample
 
-  This example demonstrates how to setup and use the ModbusRTUSlave library.
-  It is intended to be used with a second board running ModbusRTUMasterExample from the ModbusRTUMaster library.  
-  
-  Circuit:
-  - A pushbutton switch from pin 2 to GND
-  - A pushbutton switch from pin 3 to GND
-  - A LED from pin 5 to GND with a 330 ohm series resistor
-  - A LED from pin 6 to GND with a 330 ohm series resistor
-  - A LED from pin 7 to GND with a 330 ohm series resistor
-  - A LED from pin 8 to GND with a 330 ohm series resistor
-  - The center pin of a potentiometer to pin A0, and the outside pins of the potentiometer to 5V and GND
-  - The center pin of a potentiometer to pin A0, and the outside pins of the potentiometer to 5V and GND
-  
-  !!! If your board's logic voltage is 3.3V, use 3.3V instead of 5V; if in doubt use the IOREF pin !!!
-  
-  - Pin 10 to pin 11 of the master/client board
-  - Pin 11 to pin 10 of the master/client board
-  - GND to GND of the master/client board
-  
-  A schematic and illustration of the circuit is in the extras folder of the ModbusRTUSlave library.
-
-  - Pin 13 is set up as the driver enable pin. This pin will be HIGH whenever the board is transmitting.
-  
   Created: 2023-07-22
   By: C. M. Bulliner
   Modified: 2023-07-29
@@ -108,14 +85,13 @@ void setup() {
   display.println("Starting up");
   display.display();
   delay(1000);
-}// slave id, baud rate, config (optional)
 }
 
 void loop() {
   
   modbus.poll();
     readyToGo();
-     float ext_speed_converted = hexconvert(holdingRegisters[2]),holdingRegisters[3]);
+    float ext_speed_converted = hexconvert(holdingRegisters[2],holdingRegisters[3]);
     if (holdingRegisters[4] == 1){
       float move_actual = hexconvert(holdingRegisters[0],holdingRegisters[1]);
       display.clearDisplay();   

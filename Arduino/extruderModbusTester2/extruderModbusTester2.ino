@@ -36,12 +36,15 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define EXTRUDE_GLCD_HEIGHT 7 
 #define EXTRUDE_GLCD_WIDTH  24 
 
-const int txenPin = 5;
+const int txenPin = -1;
 const int stepEnablePin = 10;
 const int readyPin = 6;
 const int TIO1 = 7;
 const int id = 9;
-uint32_t baud = 9600;
+uint32_t baud = 38400;
+const char serformat = "SERIAL_8N1";
+
+uint16_t holdingRegisters[6];
 
 const int MoveBig = 0; // registers 200,201
 const int MoveSmall = 1; // registers 202,203
@@ -75,9 +78,9 @@ void setup() {
   pinMode(10,OUTPUT);
   pinMode(6,OUTPUT); 
   pinMode(7,OUTPUT); 
-  Serial.begin(baud,SERIAL_8N1);
-  while (! Serial)
-    ; 
+  Serial.begin(baud,serformat);
+  //while (! Serial)
+  //  ; 
   mod.config(baud);
   mod.addHreg(MoveBig,0);
   mod.addHreg(MoveSmall,0);
@@ -103,6 +106,8 @@ void setup() {
 }
 
 void loop() {
+
+  readyToGo();
   
   mod.task();
   //Serial.println(mod.hreg(MoveBig)," ");
@@ -112,23 +117,25 @@ void loop() {
   float ext_speed_converted = (hexconvert(mod.hreg(SpeedBig),mod.hreg(SpeedSmall)));
   
   if (mod.hreg(Dir) == 1){
-    float move_actual = hexconvert(mod.hreg(MoveBig),mod.hreg(MoveSmall));
+    float move_actual = hexconvert(mod.hreg(MoveBig),mod.hreg(MoveSmall));}
+  else {
+    float move_actual = (hexconvert(mod.hreg(MoveBig),mod.hreg(MoveSmall))*-1);}
+  
     display.clearDisplay();   
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(1,9);  
-    display.setTextSize(1);     
-    display.println(mod.hreg(MoveBig));
-    display.println(mod.hreg(SpeedBig));
+    display.setTextSize(1); 
+    display.print("MOVE: ");    
+    display.print(mod.hreg(MoveBig));
+    display.print(",  ");
+    display.println(mod.hreg(MoveSmall));
+    display.print("SPEED: ");
+    display.print(mod.hreg(SpeedBig));
+    display.print(",  ");
+    display.println(mod.hreg(SpeedSmall));
+    display.print(baud);
+    display.print(",  ");
+    display.print(serformat);
     display.display();
-    }
-  else {
-    float move_actual = (hexconvert(mod.hreg(MoveBig),mod.hreg(MoveSmall))*-1);
-    display.clearDisplay();    
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(1,9); 
-    display.setTextSize(1);     
-    display.println(mod.hreg(MoveBig));
-    display.println(mod.hreg(SpeedBig));
-    display.display();
-  }
+
 }
