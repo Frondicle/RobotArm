@@ -19,17 +19,13 @@ if arm.error_code != 0:
     arm.clean_error()
 
 def sender(*mod):
-    #if xArm TI0 is High, then send modbus data 
+# i/o traffic control disabled
     while arm.connected and arm.error_code != 19 and arm.error_code != 28:
-        code, digitals = arm.get_tgpio_digital()
-        if code == 0:
-            if digitals[0] == 0:
-                break
-            if digitals[0] == 1:
-                code, ret = arm.getset_tgpio_modbus_data([mod[0],mod[1],mod[2],mod[3],mod[4],mod[5],mod[6],mod[7],mod[8],mod[9],mod[10],mod[11]],is_transparent_transmission=True)
-                print(mod[0],mod[1],mod[2],mod[3],mod[4],mod[5],mod[6],mod[7],mod[8],mod[9],mod[10],mod[11])
-        last_digitals = digitals
-        time.sleep(0.1)
+        #if code == 0:
+        code, ret = arm.getset_tgpio_modbus_data([mod[0],mod[1],mod[2],mod[3],mod[4],mod[5],mod[6],mod[7],mod[8],mod[9],mod[10],mod[11]],is_transparent_transmission=True)
+        print(mod[0],mod[1],mod[2],mod[3],mod[4],mod[5],mod[6],mod[7],mod[8],mod[9],mod[10],mod[11])
+        print('line',i)
+        i=i+1
     
 
 #0x09,0x10,0x00,0xc8,0x00,0x04,0x08,0x00,bytelength,bytespeed
@@ -43,7 +39,7 @@ time.sleep(2)
 arm.motion_enable(enable=True)
 arm.set_mode(0)
 last_digitals = [-1, -1]
-
+i=0
 port = 9
 arm.set_state(state=0)
 arm.reset(wait=True)
