@@ -1,29 +1,24 @@
 {
     "WASPv1":{
         "NAME":"WASPv1",
-        "has_auger": true,
-        "barrel_diameter": 10,
-        "steps_per_revolution": 200,
-        "nozzle_in_mm": 1,
-        "tcp_offset_x": 0,
-        "tcp_offset_y": 0,
-        "tcp_offset_z": 110,
+        "FIRMWARE": "WASP_extruder_core.ino",
+        "FIRMWARE_PATH": "C:\\Users\\morr0289\\Documents\\GitHub\\RobotArm\\Arduino\\WASP_extruder_core\\WASP_extruder_core.ino",
+        "SLAVE_ID": 9,
+        "IP": "192.168.1.196",
+        "HAS_AUGER": true,
+        "BARREL_DIAMETER": 10,
+        "STEPS_PER_REVOLUTION": 200,
+        "NOZZLE_IN_MM": 1,
         "TCP_LOAD":[
-            {
-                "values":[
-                    "values":{
-                        [
-                            "x": 0.0,
+                    {
+                        "x": 0.0,
                         "y": 0.0,
                         "z": 0.0,
                         "weight": 0.0
-                        ]
                     }
-                ]
-            },
+                ],
        
-        "TCP_OFFSET":{
-                "values":[
+        "TCP_OFFSET":[
                     {
                         "x": 0.0,
                         "y": 0.0,
@@ -33,6 +28,7 @@
                         "rz": 0.0
                     }
                 ]
-        },
+    }
+}
 
 
