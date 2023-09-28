@@ -18,26 +18,26 @@ arm.motion_enable(True)
 arm.set_mode(0)
 arm.set_state(0)
 
-baudResponse = arm.get_tgpio_modbus_baudrate()
-print(baudResponse)
+#baudResponse = arm.get_tgpio_modbus_baudrate()
+#print(baudResponse)
 
 code = arm.set_tgpio_modbus_baudrate(9600)
 print('set_tgpio_modbus_baudrate, code={}'.format(code))
 
 time.sleep(2)
 arm.clean_error()
-print('slept')
-data_set = [0x09, 0x10, 0x00, 0x00,0x00,0x05, 0xd6, 0x03, 0xb6, 0x06, 0x00]
+print('slept a bit')
+data_set = [0x08, 0x10, 0x00, 0x00,0x00,0x05, 0xd6, 0x03, 0xb6, 0x06, 0x00]
 while arm.connected and arm.error_code == 0:
     code, ret = arm.getset_tgpio_modbus_data(data_set)
     print('this happened: code={}'.format(code))
 time.sleep(2)
-data_set = [0x09, 0x10, 0x00, 0x05, 0xd6, 0x03, 0xb6, 0x06, 0x00]
+data_set = [0x08, 0x10, 0x00, 0x05, 0xd6, 0x03, 0xb6, 0x06, 0x00]
 while arm.connected and arm.error_code == 0:
     code, ret = arm.getset_tgpio_modbus_data(data_set)
     print('this happened: code={}'.format(code))
 time.sleep(2)
-data_set = [0x09, 0x10, 0x00, 0x05, 0xe6, 0x03, 0xd6, 0x06, 0x01]
+data_set = [0x08, 0x10, 0x00, 0x05, 0xe6, 0x03, 0xd6, 0x06, 0x01]
 while arm.connected and arm.error_code == 0:
     code, ret = arm.getset_tgpio_modbus_data(data_set)
     print('this happened: code={}'.format(code))

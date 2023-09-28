@@ -48,19 +48,24 @@ static unsigned char PROGMEM const retract_glcd_bmp[] =
 #define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
+const int id = 9;
 const int baudRate = 9600;
 float extruder_speed;
 float move = 0.0;
 float move_actual = 0.0;
 int dir_received = 1;
+float lastMove = 0.0;
+float lastSpeed = 0;
+int lastDir = 0;
 int i = 0;
 
-//void readyToGo(){ //reset all variables and set readyPin to HIGH 
- //   ext_speed_converted = 0.0;
- //   move_actual = 0.0;
-  //  digitalWrite(readyPin,HIGH);
-  //  i=i+1;
-//}
+void readyToGo(){ //reset all variables and set readyPin to HIGH 
+  extruder_speed = 0.0;
+  move = 0.0;
+  move_actual = 0.0;
+  digitalWrite(TI0,HIGH);
+  i=i+1;
+}
 
 float hexconvert(int modinfosbig, int modinfoslittle){
     int big = modinfosbig;
@@ -71,6 +76,13 @@ float hexconvert(int modinfosbig, int modinfoslittle){
   }
 
 void setup() {
+
+  pinMode (dirPinStepper,OUTPUT);
+  pinMode (enablePinStepper,OUTPUT);
+  pinMode (stepPinStepper,OUTPUT);
+  pinMode (TI0,OUTPUT);
+  pinMode (TI1,OUTPUT);
+
   Serial.begin(baudRate);
 
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
@@ -78,11 +90,23 @@ void setup() {
     Serial.println(F("SSD1306 allocation failed"));
     for(;;); // Don't proceed, loop forever
    }
-      // start the Modbus RTU server, with (slave) id 42
-  if (!ModbusRTUServer.begin(9, baudRate)) {
+      // start the Modbus RTU server
+  if (!ModbusRTUServer.begin(id, baudRate)) {
     Serial.println("Failed to start Modbus RTU Server!");
     while (1);
     }
+
+  display.clearDisplay();   
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(1,9);  
+    display.setTextSize(1.5); 
+    display.print("Baudrate: ");   
+    display.print(baudRate);
+    display.print("ID: ");
+    display.println(id);
+    display.display();
+
+  delay(3000);
 
   // configure Modbus holding registers at address 0x00 thru 0x0B (0-11)
   //0x00,0x01: movement length
@@ -92,10 +116,11 @@ void setup() {
 
   ModbusRTUServer.configureHoldingRegisters(0x00,12); 
 
+
 }
 void loop() {
 
-  //readyToGo();// function to clear all the variables and hold the readyPin up HIGH
+  readyToGo();// function to clear all the variables and hold the readyPin up HIGH
 
   // poll for Modbus RTU requests****************************************************************
   ModbusRTUServer.poll();
@@ -104,33 +129,38 @@ void loop() {
   extruder_speed = hexconvert(ModbusRTUServer.holdingRegisterRead(2),ModbusRTUServer.holdingRegisterRead(3));
   dir_received = ModbusRTUServer.holdingRegisterRead(4);
 
-  if (dir_received == 1){
-    move_actual = move;
-    display.clearDisplay();
-    display.drawBitmap(4, 1,  extrude_glcd_bmp, 24, 7, 1);    
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(1,9);  
-    display.setTextSize(1); 
-    display.print("move_actual: ");   
-    display.println(move_actual);
-    display.print("extruder_speed: ");
-    display.println(extruder_speed);
-    display.println(i);
-    display.display();
-    }
-  else {
-    move_actual = (move * -1);
-    display.clearDisplay();
-    display.drawBitmap(4, 1,  retract_glcd_bmp, 24, 7, 1);     
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(1,9); 
-    display.setTextSize(1);     
-    display.print("move_actual: ");   
-    display.println(move_actual);
-    display.print("extruder_speed: ");
-    display.println(extruder_speed);
-    display.println(i);
-    display.display();
+  while(extruder_speed != lastSpeed || move != lastMove){
+    if (dir_received == 1){
+      move_actual = move;
+      display.clearDisplay();
+      display.drawBitmap(4, 1,  extrude_glcd_bmp, 24, 7, 1);    
+      display.setTextColor(SSD1306_WHITE);
+      display.setCursor(1,9);  
+      display.setTextSize(1); 
+      display.print("move_actual: ");   
+      display.println(move_actual);
+      display.print("extruder_speed: ");
+      display.println(extruder_speed);
+      display.println(i);
+      display.display();
+      }
+    else {
+      move_actual = (move * -1);
+      display.clearDisplay();
+      display.drawBitmap(4, 1,  retract_glcd_bmp, 24, 7, 1);     
+      display.setTextColor(SSD1306_WHITE);
+      display.setCursor(1,9); 
+      display.setTextSize(1);     
+      display.print("move_actual: ");   
+      display.println(move_actual);
+      display.print("extruder_speed: ");
+      display.println(extruder_speed);
+      display.print(" ");
+      display.println(i);
+      display.display();
+  lastMove = move;
+  lastSpeed = extruder_speed;
+  lastDir = dir_received;
   }
 
   //***********************************STEPPER**************************
@@ -196,4 +226,5 @@ digitalWrite (enablePin,LOW);
   delay(1000);
   //digitalWrite(enablePin,HIGH);*/
 
+  }
 }
