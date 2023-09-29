@@ -53,7 +53,10 @@ const int baudRate = 9600;
 float extruder_speed;
 float move = 0.0;
 float move_actual = 0.0;
-int dir_received = 1;
+uint8_t move_received[];
+uint8_t speed_received[];
+uint8_t dir_received = 1;
+int direction = 0;
 float lastMove = 0.0;
 float lastSpeed = 0;
 int lastDir = 0;
@@ -99,14 +102,16 @@ void setup() {
   display.clearDisplay();   
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(1,9);  
-    display.setTextSize(1.5); 
+    display.setTextSize(1); 
+    display.print("WASP_extruder_core_working");
+    display.setTextSize(1.5);
     display.print("Baudrate: ");   
     display.print(baudRate);
-    display.print("ID: ");
+    display.print("  ID: ");
     display.println(id);
     display.display();
 
-  delay(3000);
+  delay(2500);
 
   // configure Modbus holding registers at address 0x00 thru 0x0B (0-11)
   //0x00,0x01: movement length
@@ -114,34 +119,38 @@ void setup() {
   //0x04: extruder direction 1 for forward, 0 for backward
   //0x05 thru 0x0B for error messages, and other stuff I don't know about yet
 
-  ModbusRTUServer.configureHoldingRegisters(0x00,12); 
+  ModbusRTUServer.configureHoldingRegisters(0x00,6); 
 
 
 }
 void loop() {
 
-  readyToGo();// function to clear all the variables and hold the readyPin up HIGH
+  readyToGo();// function to clear all the variables and hold the readyPin HIGH
 
   // poll for Modbus RTU requests****************************************************************
   ModbusRTUServer.poll();
-
+  int move_0_received= ModbusRTUServer.holdingRegisterRead(0);
+  int move_1_received= ModbusRTUServer.holdingRegisterRead(1);
+  int speed_0_received = ModbusRTUServer.holdingRegisterRead(2);
+  int speed_1_received = ModbusRTUServer.holdingRegisterRead(3);
+  int dir_0_received = ModbusRTUServer.holdingRegisterRead(4);
+  int dir_1_received = ModbusRTUServer.holdingRegisterRead(5);
   move = hexconvert(ModbusRTUServer.holdingRegisterRead(0),ModbusRTUServer.holdingRegisterRead(1));
   extruder_speed = hexconvert(ModbusRTUServer.holdingRegisterRead(2),ModbusRTUServer.holdingRegisterRead(3));
-  dir_received = ModbusRTUServer.holdingRegisterRead(4);
-
+  direction = hexconvert(ModbusRTUServer.holdingRegisterRead(4),ModbusRTUServer.holdingRegisterRead(5));
+  int data[] = {move_0_received,move_1_received,speed_0_received,speed_1_received,dir_0_received,dir_1_received};
   while(extruder_speed != lastSpeed || move != lastMove){
-    if (dir_received == 1){
+    if (direction == 1){
       move_actual = move;
       display.clearDisplay();
       display.drawBitmap(4, 1,  extrude_glcd_bmp, 24, 7, 1);    
       display.setTextColor(SSD1306_WHITE);
       display.setCursor(1,9);  
       display.setTextSize(1); 
-      display.print("move_actual: ");   
-      display.println(move_actual);
-      display.print("extruder_speed: ");
-      display.println(extruder_speed);
-      display.println(i);
+      //display.print("move: ");   
+      //display.print(move_actual);
+      //display.print(extruder_speed);
+      //display.print(" ");
       display.display();
       }
     else {
@@ -150,17 +159,25 @@ void loop() {
       display.drawBitmap(4, 1,  retract_glcd_bmp, 24, 7, 1);     
       display.setTextColor(SSD1306_WHITE);
       display.setCursor(1,9); 
-      display.setTextSize(1);     
-      display.print("move_actual: ");   
-      display.println(move_actual);
-      display.print("extruder_speed: ");
-      display.println(extruder_speed);
-      display.print(" ");
-      display.println(i);
+      display.setTextSize(1); 
+      //display.print("move_actual: ");   
+      //display.print(move_actual);
+      //display.print(move_received[0]);
+      //display.print(" ");
+      //display.println(move_received[1]);
+      //display.print("extruder_speed: ");
+      //display.print(extruder_speed);
+      //display.print(" ");
+      //display.print(speed_received[0]);
+      //display.print(" ");
+      //display.println(speed_received[1])
+      display.println(data[0]," ",data[1]," ",data[2]," ",data[3]," ",data[4]," ",data[5]);
+      //display.print("line: ");
+      //display.println(i);
       display.display();
   lastMove = move;
   lastSpeed = extruder_speed;
-  lastDir = dir_received;
+  lastDir = direction;
   }
 
   //***********************************STEPPER**************************
