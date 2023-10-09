@@ -50,20 +50,17 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 const int id = 9;
 const int baudRate = 9600;
-float extruder_speed;
+float speed = 0.0;
 float move = 0.0;
 float move_actual = 0.0;
-uint8_t move_received[];
-uint8_t speed_received[];
-uint8_t dir_received = 1;
-int direction = 0;
+int dir = 0;
 float lastMove = 0.0;
 float lastSpeed = 0;
 int lastDir = 0;
 int i = 0;
 
 void readyToGo(){ //reset all variables and set readyPin to HIGH 
-  extruder_speed = 0.0;
+  speed = 0.0;
   move = 0.0;
   move_actual = 0.0;
   digitalWrite(TI0,HIGH);
@@ -129,55 +126,35 @@ void loop() {
 
   // poll for Modbus RTU requests****************************************************************
   ModbusRTUServer.poll();
-  int move_0_received= ModbusRTUServer.holdingRegisterRead(0);
-  int move_1_received= ModbusRTUServer.holdingRegisterRead(1);
-  int speed_0_received = ModbusRTUServer.holdingRegisterRead(2);
-  int speed_1_received = ModbusRTUServer.holdingRegisterRead(3);
-  int dir_0_received = ModbusRTUServer.holdingRegisterRead(4);
-  int dir_1_received = ModbusRTUServer.holdingRegisterRead(5);
-  move = hexconvert(ModbusRTUServer.holdingRegisterRead(0),ModbusRTUServer.holdingRegisterRead(1));
-  extruder_speed = hexconvert(ModbusRTUServer.holdingRegisterRead(2),ModbusRTUServer.holdingRegisterRead(3));
-  direction = hexconvert(ModbusRTUServer.holdingRegisterRead(4),ModbusRTUServer.holdingRegisterRead(5));
-  int data[] = {move_0_received,move_1_received,speed_0_received,speed_1_received,dir_0_received,dir_1_received};
-  while(extruder_speed != lastSpeed || move != lastMove){
-    if (direction == 1){
+  float move = ModbusRTUServer.holdingRegisterRead(0);
+  float speed = ModbusRTUServer.holdingRegisterRead(1);
+  int dir = ModbusRTUServer.holdingRegisterRead(2);
+  //move = hexconvert(ModbusRTUServer.holdingRegisterRead(0),ModbusRTUServer.holdingRegisterRead(1));
+  //extruder_speed = hexconvert(ModbusRTUServer.holdingRegisterRead(2),ModbusRTUServer.holdingRegisterRead(3));
+  //direction = hexconvert(ModbusRTUServer.holdingRegisterRead(4),ModbusRTUServer.holdingRegisterRead(5));
+  //int data[] = {move_0_received,move_1_received,speed_0_received,speed_1_received,dir_0_received,dir_1_received};
+  while(speed != lastSpeed || move != lastMove){
+    if (dir == 1){
       move_actual = move;
-      display.clearDisplay();
-      display.drawBitmap(4, 1,  extrude_glcd_bmp, 24, 7, 1);    
-      display.setTextColor(SSD1306_WHITE);
-      display.setCursor(1,9);  
-      display.setTextSize(1); 
-      //display.print("move: ");   
-      //display.print(move_actual);
-      //display.print(extruder_speed);
-      //display.print(" ");
-      display.display();
       }
     else {
       move_actual = (move * -1);
+    }
       display.clearDisplay();
       display.drawBitmap(4, 1,  retract_glcd_bmp, 24, 7, 1);     
       display.setTextColor(SSD1306_WHITE);
       display.setCursor(1,9); 
       display.setTextSize(1); 
-      //display.print("move_actual: ");   
-      //display.print(move_actual);
-      //display.print(move_received[0]);
-      //display.print(" ");
-      //display.println(move_received[1]);
-      //display.print("extruder_speed: ");
-      //display.print(extruder_speed);
-      //display.print(" ");
-      //display.print(speed_received[0]);
-      //display.print(" ");
-      //display.println(speed_received[1])
-      display.println(data[0]," ",data[1]," ",data[2]," ",data[3]," ",data[4]," ",data[5]);
-      //display.print("line: ");
-      //display.println(i);
+      display.print("move_actual: ");   
+      display.print(" ");
+      display.println(move_actual);
+      display.print("speed: ");
+      display.print(" ");
+      display.print(speed);
       display.display();
   lastMove = move;
-  lastSpeed = extruder_speed;
-  lastDir = direction;
+  lastSpeed = speed;
+  lastDir = dir;
   }
 
   //***********************************STEPPER**************************
