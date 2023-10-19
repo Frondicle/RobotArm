@@ -25,7 +25,7 @@ ret = arm.core.set_modbus_baudrate(baudRate)
 print('set modbus baudrate, ret = %d' % (ret[0]))
 
 time.sleep(1)
-line = 90
+line = 102
 
 def errors(returned):
     if returned == 1:
@@ -60,7 +60,7 @@ def sender(data_frame):
         print ('extruder reports ready')
         ret = arm.getset_tgpio_modbus_data(data_frame,host_id=id)
         if ret[0] == 0:
-            print('wrote ',data_frame[8])
+            print('wrote ',data_frame[8],data_frame[9],data_frame[10])
             print('got back this: ',ret[1])
             print('line: ',line)
             line += 3
@@ -79,6 +79,16 @@ arm.set_tcp_offset([0,0,110,0,30.3,0], is_radian=False)
 arm.set_collision_tool_model(22, x=40, y=40, z=110)
 
 last_digitals = [-1, -1]
+
+'''TGPIO for air solenoid---------------------------------------------
+value = 0
+for i in range(4, 8):
+    code = arm.set_cgpio_digital_output_function(i, value)
+    print('set_cgpio_digital_output_function({}, {}), code={}'.format(i, value, code))
+# Reset: 255
+for i in range(4, 8):
+    code = arm.set_cgpio_digital_output_function(i, 255)
+    print('set_cgpio_digital_output_function({}, {}), code={}'.format(i, value, code))'''
 
 
 arm.reset(wait=True)
