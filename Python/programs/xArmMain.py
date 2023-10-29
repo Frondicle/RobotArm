@@ -82,7 +82,7 @@ last_digitals = [-1, -1]
 
 '''TGPIO for air solenoid---------------------------------------------
 value = 0
-for i in range(4, 8):
+
     code = arm.set_cgpio_digital_output_function(i, value)
     print('set_cgpio_digital_output_function({}, {}), code={}'.format(i, value, code))
 # Reset: 255
@@ -96,9 +96,10 @@ if arm.warn_code != 0:
     arm.clean_warn()
 if arm.error_code != 0:
     arm.clean_error()
-
-while arm.connected and arm.error_code ==0:
+ 
+while arm.connected and arm.error_code == 0:
 #data is big-endian
+
     datas = [0x09,0x10,0x00,0x00,0x00,0x03,0x06,0x00,0xa4,0x01,0x1f,0x00,0x01]
     #datas = [9,func16,start1,start2,numreg1,numreg2,numbytes,164,287,0x00,0x01]
     sender(datas)

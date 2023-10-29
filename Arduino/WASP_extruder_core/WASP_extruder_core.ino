@@ -19,25 +19,25 @@
 #define EXTRUDE_GLCD_HEIGHT 7 // height of extrude graphic
 #define EXTRUDE_GLCD_WIDTH  24 //width of extrude graphic
 static unsigned char PROGMEM const extrude_glcd_bmp[] =
-{ B00001100, B00011000, B00000000,
-  B00011100, B00111000, B00000000,
-  B00111100, B01111111, B11111111,
-  B01111100, B11111111, B11111111,
-  B00111100, B01111111, B11111111,
-  B00011100, B00111000, B00000000,
-  B00001100, B00011000, B00000000};
+{ 0b00001100, 0b00011000, 0b00000000,
+  0b00011100, 0b00011100, 0b00000000,
+  0b00111100, 0b01111111, 0b11111111,
+  0b01111100, 0b11111111, 0b11111111,
+  0b00111100, 0b01111111, 0b11111111,
+  0b00011100, 0b00011100, 0b00000000,
+  0b00001100, 0b00011000, 0b00000000};
 
 //___________________________________________
 #define RETRACT_GLCD_HEIGHT 7 
 #define RETRACT_GLCD_WIDTH  24 
 static unsigned char PROGMEM const retract_glcd_bmp[] =
-{ B00000000, B00011000, B00110000,
-  B00000000, B00011100, B00111000,
-  B11111111, B11111110, B00111100,
-  B11111111, B11111111, B00111110,
-  B11111111, B11111110, B00111100,
-  B00000000, B00011100, B00111000,
-  B00000000, B00011000, B00110000};
+  { 0b00000000, 0b00011000, 0b00110000,
+  0b00000000, 0b00011100, 0b00011100,
+  0b11111111, 0b11111110, 0b00111100,
+  0b11111111, 0b11111111, 0b00111110,
+  0b11111111, 0b11111110, 0b00111100,
+  0b00000000, 0b00011100, 0b00011100,
+  0b00000000, 0b00011000, 0b00110000};
 
 
 //____________________________________________
@@ -125,9 +125,9 @@ void loop() {
   // poll for Modbus RTU requests****************************************************************
   ModbusRTUServer.poll();
 
-  move = hexconvert(ModbusRTUServer.holdingRegisterRead(0),ModbusRTUServer.holdingRegisterRead(1));
-  extruder_speed = hexconvert(ModbusRTUServer.holdingRegisterRead(2),ModbusRTUServer.holdingRegisterRead(3));
-  dir_received = ModbusRTUServer.holdingRegisterRead(4);
+  move = ModbusRTUServer.holdingRegisterRead(0);//,ModbusRTUServer.holdingRegisterRead(1));
+  extruder_speed = ModbusRTUServer.holdingRegisterRead(1);//ModbusRTUServer.holdingRegisterRead(3));
+  dir_received = ModbusRTUServer.holdingRegisterRead(2);
 
   while(extruder_speed != lastSpeed || move != lastMove){
     if (dir_received == 1){

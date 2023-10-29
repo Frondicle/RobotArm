@@ -13,13 +13,12 @@
 #include <Adafruit_SSD1306.h>
 
 
-#define TI0                 20 //extruder digital output to xArm TI0, LOW for busy
-#define TI1                 21 //spare digital output to xArm TI0
+#define TI0                6 //extruder digital output to xArm TI0, LOW for busy
+#define TI1                 7 //spare digital output to xArm TI0
 //#define TO0               to reset pin for arm reset control
 #define TO1                 19 //digital input for robot arm
-#define dirPinStepper       14 //stepper direction, HIGH for forward
-#define stepPinStepper      16  //stepper pin: high/low sequence makes one step
-#define enablePinStepper    15 //stepper driver enable
+#define dirPinStepper       8 //stepper direction, HIGH for forward
+#define stepPinStepper      9  //stepper pin: high/low sequence makes one step
 #define stepsPerRevolution  200
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -31,24 +30,25 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define EXTRUDE_GLCD_HEIGHT 7 
 #define EXTRUDE_GLCD_WIDTH  24 
 static unsigned char PROGMEM const extrude_glcd_bmp[] =
-{ B00001100, B00011000, B00000000,
-  B00011100, B00111000, B00000000,
-  B00111100, B01111111, B11111111,
-  B01111100, B11111111, B11111111,
-  B00111100, B01111111, B11111111,
-  B00011100, B00111000, B00000000,
-  B00001100, B00011000, B00000000};
+{ 0b00001100, 0b00011000, 0b00000000,
+  0b00011100, 0b00011100, 0b00000000,
+  0b00111100, 0b01111111, 0b11111111,
+  0b01111100, 0b11111111, 0b11111111,
+  0b00111100, 0b01111111, 0b11111111,
+  0b00011100, 0b00011100, 0b00000000,
+  0b00001100, 0b00011000, 0b00000000};
 
+//___________________________________________
 #define RETRACT_GLCD_HEIGHT 7 
 #define RETRACT_GLCD_WIDTH  24 
 static unsigned char PROGMEM const retract_glcd_bmp[] =
-{ B00000000, B00011000, B00110000,
-  B00000000, B00011100, B00111000,
-  B11111111, B11111110, B00111100,
-  B11111111, B11111111, B00111110,
-  B11111111, B11111110, B00111100,
-  B00000000, B00011100, B00111000,
-  B00000000, B00011000, B00110000};
+  { 0b00000000, 0b00011000, 0b00110000,
+  0b00000000, 0b00011100, 0b00011100,
+  0b11111111, 0b11111110, 0b00111100,
+  0b11111111, 0b11111111, 0b00111110,
+  0b11111111, 0b11111110, 0b00111100,
+  0b00000000, 0b00011100, 0b00011100,
+  0b00000000, 0b00011000, 0b00110000};
 
 int steps_per_revolution = 200;
 float barrel_diameter_mm = 10;
@@ -60,9 +60,9 @@ float nozzle_area_mm = 3.14;
 float extrusion_per_rotation_mm = volume_per_rotation_mm / nozzle_area_mm;
 float extrusion_per_step_mm = extrusion_per_rotation_mm / steps_per_revolution;
 
-const int MOTOR_STEP_PIN = 16;
-const int MOTOR_DIRECTION_PIN = 14;
-const int MOTOR_ENABLE_PIN = 15;
+const int MOTOR_STEP_PIN = 8;
+const int MOTOR_DIRECTION_PIN = 9;
+
 const int id = 9;
 const int ModbusBaudRate = 9600;
 float speed = 0.0;
@@ -103,10 +103,8 @@ void setup() {
 
   stepper.connectToPins(MOTOR_STEP_PIN,MOTOR_DIRECTION_PIN);
 
-  pinMode (enablePinStepper,OUTPUT);
   pinMode (TI0,OUTPUT);
   pinMode (TI1,OUTPUT);
-  pinMode (TO1,INPUT);
 
   Serial.begin(ModbusBaudRate);
 
@@ -126,6 +124,7 @@ void setup() {
     display.print("Baudrate: ");   
     display.println(ModbusBaudRate);
     display.print("  ID: ");
+    display.display();
 
   delay(2500);
 
@@ -162,16 +161,14 @@ void loop() {
     else {
       move_actual = (move * -1);
     }
-    digitalWrite(MOTOR_ENABLE_PIN,HIGH);
-    stepper.setSpeedInMillimetersPerSecond(speed_mapped);
+    stepper.setSpeedInMillimetersPerSecond(speed);
     stepper.moveToPositionInMillimeters(move_actual);
-   display.clearDisplay();
+    display.clearDisplay();
       display.drawBitmap(4, 1,  retract_glcd_bmp, 24, 7, 1);     
       display.setTextColor(SSD1306_WHITE);
       display.setCursor(1,9); 
       display.setTextSize(1); 
-      display.print("move_actual: ");   
-      display.print(" ");
+      display.print("move: ");   
       display.println(move_actual);
       display.print("speed: ");
       display.print(" ");
