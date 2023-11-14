@@ -1,14 +1,27 @@
+/*
+firmware for WASP extruder to use Ufactory xArm6 to print with clay or pastes
+Chris Morrey at the Christopher C Gibbs College of Architecture, University of Oklahoma.10/13/2023 
 
+  This  is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
 
-//firmware for WASP extruder to use Ufactory xArm6 to print with clay or pastes
-//Chris Morrey at the Christopher C Gibbs College of Architecture, University of Oklahoma.10/13/2023 
+  This software is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this software; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+*/
 
 #include <SPI.h>
 #include <Wire.h>
-#include "FlexyStepper.h"
+#include <FlexyStepper.h>
 #include <ArduinoRS485.h> // ArduinoModbus depends on the ArduinoRS485 library
 #include <ArduinoModbus.h>
-#include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
@@ -16,7 +29,8 @@
 #define TI0                6 //extruder digital output to xArm TI0, LOW for busy
 #define TI1                 7 //spare digital output to xArm TI0
 //#define TO0               to reset pin for arm reset control
-#define TO1                 19 //digital input for robot arm
+//#define TO1                 19 //digital input for robot arm
+
 #define dirPinStepper       8 //stepper direction, HIGH for forward
 #define stepPinStepper      9  //stepper pin: high/low sequence makes one step
 #define stepsPerRevolution  200
@@ -77,11 +91,16 @@ int i = 0;
 
 FlexyStepper stepper;
 
-void readyToGo(){ //reset all variables and set readyPin to HIGH 
+void resetAndPoll(){ //reset all variables and set readyPin to HIGH 
   speed = 0.0;
   move = 0.0;
   move_actual = 0.0;
   digitalWrite(TI0,HIGH);
+  ModbusRTUServer.poll();
+  float move = ModbusRTUServer.holdingRegisterRead(0);
+  float speed = ModbusRTUServer.holdingRegisterRead(1);
+  int dir = ModbusRTUServer.holdingRegisterRead(2);
+  digitalWrite(TI0,LOW);
   i=i+1;
 }
 
@@ -105,39 +124,38 @@ void setup() {
 
   pinMode (TI0,OUTPUT);
   pinMode (TI1,OUTPUT);
+  //pinMode (TO0,INPUT);
+  //pinMode (TO1,INPUT);
 
   Serial.begin(ModbusBaudRate);
 
-
-      // start the Modbus RTU server
   if (!ModbusRTUServer.begin(id, ModbusBaudRate)) {
-      display.clearDisplay();   
+    display.clearDisplay();   
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(1,9);  
-    display.setTextSize(1); 
-    display.print("WASP_ext_CURRENT");
+    display.setTextSize(2); 
+    display.println("NO");
+    display.println("MODBUS");
     display.display();
     while (1);
     }
 
-  display.clearDisplay();   
+    display.clearDisplay();   
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(1,9);  
     display.setTextSize(1); 
-    display.print("WASP_ext_CURRENT");
+    display.print("WASP_ext_10/31/23");
     display.setTextSize(1.5);
     display.print("Baudrate: ");   
     display.println(ModbusBaudRate);
-    display.print("  ID: ");
     display.display();
-
-  delay(2500);
+    delay(2500);
 
   // configure Modbus holding registers at address 0x00 thru 0x0B (0-11)
-  //0x00,0x01: movement length
-  //0x02,0x03: extruder speed in...???
-  //0x04: extruder direction 1 for forward, 0 for backward
-  //0x05 thru 0x0B for error messages, and other stuff I don't know about yet
+  //0x00: movement length
+  //0x01: extruder speed in...???
+  //0x02: extruder direction 1 for forward, 0 for backward
+  //0x03 thru 0x06 for error messages, and other stuff I don't know about yet
 
   ModbusRTUServer.configureHoldingRegisters(0x00,6); 
 
@@ -146,20 +164,8 @@ void setup() {
 }
 void loop() {
 
-  readyToGo();// function to clear all the variables and hold the readyPin HIGH
+  resetAndPoll();
 
-  stepper.setStepsPerMillimeter(extrusion_per_step_mm);
-
-  // poll for Modbus RTU requests****************************************************************
-  ModbusRTUServer.poll();
-  float move = ModbusRTUServer.holdingRegisterRead(0);
-  float speed = ModbusRTUServer.holdingRegisterRead(1);
-  int dir = ModbusRTUServer.holdingRegisterRead(2);
-  //move = hexconvert(ModbusRTUServer.holdingRegisterRead(0),ModbusRTUServer.holdingRegisterRead(1));
-  //extruder_speed = hexconvert(ModbusRTUServer.holdingRegisterRead(2),ModbusRTUServer.holdingRegisterRead(3));
-  //direction = hexconvert(ModbusRTUServer.holdingRegisterRead(4),ModbusRTUServer.holdingRegisterRead(5));
-  //int data[] = {move_0_received,move_1_received,speed_0_received,speed_1_received,dir_0_received,dir_1_received};
-  while(speed != lastSpeed || move != lastMove){
     if (dir == 1){
       move_actual = move;
       }
@@ -167,23 +173,23 @@ void loop() {
       move_actual = (move * -1);
     }
     stepper.setSpeedInStepsPerSecond(speed);
+    stepper.setAccelerationInStepsPerSecondPerSecond(1000);
     stepper.moveRelativeInSteps(move_actual);
-    digitalWrite(TI0,LOW);
     stepper.processMovement();
+    
     display.clearDisplay();
-      display.drawBitmap(4, 1,  retract_glcd_bmp, 24, 7, 1);     
-      display.setTextColor(SSD1306_WHITE);
-      display.setCursor(1,9); 
-      display.setTextSize(1); 
-      display.print("move: ");   
-      display.println(move_actual);
-      display.print("speed: ");
-      display.print(" ");
-      display.print(speed);
-      display.display();
+    display.drawBitmap(4, 1,  retract_glcd_bmp, 24, 7, 1);     
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(1,9); 
+    display.setTextSize(1); 
+    display.print("move: ");   
+    display.println(move_actual);
+    display.print("speed: ");
+    display.println(speed);
+    display.display();
   lastMove = move;
   lastSpeed = speed;
   lastDir = dir;
-  }
+  
 
 }

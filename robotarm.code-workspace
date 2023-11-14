@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "C:/Users/morr0289/Documents/GitHub/RobotArm/Python/programs"
+		}
+	],
+	"settings": {
+		"python.autoComplete.extraPaths": [
+			"../../../AppData/Local/Programs/Python/Python310/Lib/site-packages/pandas/io","Python/arm_sdk3/xarm/wrapper/"
+
+		],
+		"python.defaultInterpreterPath": "C:/Program Files/Python312",
+		"python.globalModuleInstallation": true,
+		"python.terminal.activateEnvInCurrentTerminal": true,
+		"python.terminal.executeInFileDir": true
+	}
+}

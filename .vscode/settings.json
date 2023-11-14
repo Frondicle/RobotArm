@@ -1,0 +1,17 @@
+{
+    "python.globalModuleInstallation": true,
+    "python.terminal.executeInFileDir": true,
+    "jupyter.debugJustMyCode": false,
+    "python.autoComplete.extraPaths": [
+        "c:\\users\\morr0289\\appdata\\local\\packages\\pythonsoftwarefoundation.python.3.10_qbz5n2kfra8p0\\localcache\\local-packages\\python310\\site-packages"
+
+    ],
+    "python.analysis.addImport.exactMatchOnly": true,
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.extraPaths": [
+        "c:\\users\\morr0289\\appdata\\local\\packages\\pythonsoftwarefoundation.python.3.10_qbz5n2kfra8p0\\localcache\\local-packages\\python310\\site-packages"
+    ],
+    "python.analysis.include": [
+        "c:\\users\\morr0289\\appdata\\local\\packages\\pythonsoftwarefoundation.python.3.10_qbz5n2kfra8p0\\localcache\\local-packages\\python310\\site-packages"
+    ]
+}

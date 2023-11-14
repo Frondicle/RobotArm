@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "../..",
+			"PATH": "C:Users/morr0289/AppData/Roaming/Python/Python312/Scripts"
+		}
+	],
+	"settings": {
+		"python.terminal.executeInFileDir": true
+	}
+}
