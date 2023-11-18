@@ -2,16 +2,25 @@
 
 import sys
 import time
+import numpy as np
 import pandas as pd
+import win32com.client 
+
 sys.path.append("C:\\Users\\morr0289\\Documents\\Github\\RobotArm\\Python\\final\\")
 #sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from .arm_sdk3.xarm.wrapper.xarm_api import XArmAPI
+from arm_sdk3.xarm.wrapper.xarm_api import XArmAPI
 
-arm = XArmAPI('192.168.1.240')
+arm = XArmAPI('192.168.1.240',is_radian=False)
 id = 9
 baudRate = 9600
 
-filedata = pd.read_excel('C:\\Users\\morr0289\\Documents\\GitHub\\RobotArm\\Python\\programs\\grassData.xlsx', sheet_name='1', index_col=None)
+speaker = win32com.client.Dispatch("SAPI.SpVoice")
+
+xlpath = "C:\\Users\\morr0289\\Documents\\GitHub\\RobotArm\\Python\\final\\grassData.xlsx"
+
+mod = pd.read_excel(xlpath, "1", index_col='index',usecols=['index','move','espeed','dir','end'])
+
+move = pd.read_excel(xlpath, "1", index_col='index',usecols=['index','x','y','z','pitch','roll','yaw','fspeed'])
 
 code, digitals = arm.get_tgpio_digital()
 
@@ -28,7 +37,7 @@ print('set modbus baudrate, ret = %d' % (ret[0]))
 
 time.sleep(1)
 
-def errors(returned):
+'''def errors(returned):
     if returned == 1:
         print('1: uncleared error exists')
     elif returned == 23:
@@ -49,7 +58,7 @@ def errors(returned):
     else:
         print('error not cleared; quitting...')
         time.sleep(2)
-        quit()
+        quit()'''
 
 def hexer(x):
     h = str(hex(x))
@@ -66,39 +75,55 @@ def hexer(x):
     c = [a,b]
     return c
 
-def getMove(filedata,ln):
-    mv = filedata.read(ln)
-    return mv[5:10]
+def getMove(frame,ln):
+    move = frame.iloc[ln] 
+    ptx = move['x']
+    pty = move['y']
+    ptz = move['z']
+    ptp = move['pitch']
+    ptr = move['roll']
+    ptyaw = move['yaw']
+    pts = move['fspeed']
+    mv = [ptx,pty,ptz,ptp,ptr,ptyaw,pts]
+    return mv
 
-def buildFrame(filedata,ln):
-    mod = filedata.read(ln)
-    #line1=hexer(mod[0])[0]
-    #line2=hexer(mod[0])[1]  
-    move1=hexer(mod[1])[0]
-    move2=hexer(mod[1])[1]
-    speed1=hexer(mod[2])[0]
-    speed2=hexer(mod[2])[1]
-    dir1=hexer(mod[3])[0]
-    dir2=hexer(mod[3])[1]
-    end1=hexer(mod[4])[0]
-    end2=hexer(mod[4])[1]
-
-    modframe = ('0x09,0x10,0x00,0x00,0x00,0x04,0x08,',move1,',',move2,',',speed1,',',speed2,',',dir1,',',dir2,',',end1,',',end2)
-    return modframe
+def modFrame(frame,ln):
+    modData=frame.iloc[ln]
+    move=modData['move']
+    spd=modData['espeed']
+    dir=modData['dir']
+    end=modData['end']
+    dframe = (0x09,0x10,0x00,0x00,0x00,0x04,0x08,move,spd,dir,end)
+    return dframe
 
 def sender(data_frame):
     global id
     arm.clean_error()
+    arm.motion_enable(enable=True)
+    arm.set_state(state=0)
     time.sleep(.01)
     #while arm.connected and arm.error_code != 19 and arm.error_code != 28:
     if code == 0:
         ret = arm.getset_tgpio_modbus_data(data_frame,host_id=id)
-    elif code != 0:
-        errors(ret[0])
+    #elif code != 0:
+        #errors(ret[0])
 
-arm.motion_enable(enable=True)
-arm.set_mode(0)
-arm.set_state(state=0)
+def mover(move):
+    print(arm.get_err_warn_code())
+    arm.clean_error()
+    arm.motion_enable(enable=True)
+    arm.set_state(state=0)
+    time.sleep(.01)
+    print(move)
+    response=input('type k to continue: ')
+    if response == 'k':
+        arm.set_position(x=move[0], y=move[1], z=move[2], roll=move[4], pitch=move[3], yaw=move[5], speed=move[6], is_radian=False, wait=True)
+    if response == 'q':
+        quit()
+
+
+speaker.Speak("Robot Arm Connected.")
+
 
 arm.set_tcp_load(weight=0.91, center_of_gravity=[0,80,-40]) 
 arm.set_tcp_offset([0,0,111.5,0,30.3,0], is_radian=False)
@@ -126,23 +151,27 @@ time.sleep(2)
 
 line = 0
 
+
+ #initial packet:
+init = [0x09,0x10,0x00,0x00,0x00,0x06,0x0c,0x00,0x6f,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x02]
+sender(init)
+print('init packet sent')
+speaker.Speak("Initializing.")
+
 while arm.connected:
-    #initial packet:
-    init = [0x09,0x10,0x00,0x00,0x00,0x06,0x0c,0x00,0x6f,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x02]
-    sender(init)
-    line+=1
-    print('init packet sent')
-    for x in filedata:
-        datas = buildFrame(filedata,line)
-        newMove = getMove(filedata,line)
-        # modbus test only arm.set_position(x=newMove[0], y=newMove[1], z=newMove[2], roll= newMove[3], pitch=newMove[4], yaw=newMove[5], speed=armspeed, wait=True)
+    for x in mod:
+        datas = modFrame(mod,line)
+        newMove = getMove(move,line)
+        arm.set_state(state=0)
         sender(datas)
-        print(datas,newMove[0:5],sep=', ')
+        mover(newMove)
+        print(datas,newMove[0:6],sep=', ')
         line+=1
 #finish up:   
 datas =[0x09,0x10,0x00,0x00,0x00,0x05,0x0a,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x01]
 sender(datas,line)
+
 time.sleep(2)
-pd.ExcelFile.close(filedata)
+pd.ExcelFile.close(xlpath)
 arm.reset(wait=True)
 arm.disconnect()
