@@ -1,0 +1,140 @@
+{
+    "CLAY_TOOLS":{
+        "CARTESIAN":{
+            "POTTERBOT":[
+                {
+                    "name":"Potterbot",
+                    "description":"Clay printer using stepper-driven ram",
+                    "connection":{
+                        "type":"url",
+                        "ip":"xxx.xxx.xxx.xxx"
+                    },
+                    "mechanical":{
+                        "steps_per_rotation":200,
+                        "barrel_area_mm2":XX,
+                        "pitch_mm":x
+                    },  
+                    "nozzle":[
+                        {
+                            "diameter": 0.2,
+                            "area": 0.0314
+                        },
+                        {
+                            "diameter": 0.4,
+                            "area": 0.1256
+                        },
+                        {
+                            "diameter": 0.6,
+                            "area": 0.2826
+                        },
+                        {
+                            "diameter": 0.8,
+                            "area": 0.5026
+                        },
+                        {
+                            "diameter": 1.0,
+                            "area": 0.7854
+                        },
+                        {
+                            "diameter": 2.0,
+                            "area": 3.1416
+                        }
+                    ]
+                }
+            ]
+        },   
+        "6_AXIS": {
+            "WASP": {
+                "name": "WASP",
+                "description": "Stepper-driven auger extruder system",
+                "connection": {
+                    "type": "MODBUS",
+                    "baud": 9600
+                },
+                "mechanical": {
+                    "steps_per_rotation": 200,
+                    "barrel_area_mm2": XX,
+                    "pitch": 7,
+                    "nozzle":[
+                        {
+                            "diameter": 0.2,
+                            "area": 0.0314
+                        },
+                        {
+                            "diameter": 0.4,
+                            "area": 0.1256
+                        },
+                        {
+                            "diameter": 0.6,
+                            "area": 0.2826
+                        },
+                        {
+                            "diameter": 0.8,
+                            "area": 0.5026
+                        },
+                        {
+                            "diameter": 1.0,
+                            "area": 0.7854
+                        },
+                        {
+                            "diameter": 2.0,
+                            "area": 3.1416
+                        }
+                "TCP": {
+                    "CENTER"{
+                        [
+                        "XOFFSET": 0,
+                        "YOFFSET": 0,
+                        "ZOFFSET": 111.5,
+                        "XROT": 0,
+                        "YROT": 30.3,
+                        "ZROT": 0
+                        ]
+                    },
+                    "LOAD"{
+                        [
+                        "XGRAVITY": 0,
+                        "YGRAVITY": 80,
+                        "ZGRAVITY": -40,
+                        "WEIGHT_KG": 0.91
+                        ]
+                    }
+                }
+        }
+    },
+    "FDM_TOOLS":{
+        "CARTESIAN":{
+            "PRUSA":{
+                "name":"Prusa",
+                "description":"Prusa i3 MK3S",
+                "connection":{
+                    "type":"url",
+                    "ip":"xxx.xxx.xxx.xxx"
+                },
+                "mechanical":{
+                    "steps_per_rotation":200,
+                    "barrel_area_mm2":null,
+                    "pitch_mm":null
+                },  
+                "nozzle":[
+                    {
+                        "diameter": 0.2,
+                        "area": 0.0314
+                    },
+                    {
+                        "diameter": 0.4,
+                        "area": 0.1256
+                    },
+                    {
+                        "diameter": 0.6,
+                        "area": 0.2826
+                    },
+                    {
+                        "diameter": 0.8,
+                        "area": 0.5026
+                    }    
+                ]
+            }
+        }
+    }   
+}

@@ -3,6 +3,7 @@
     "python.terminal.executeInFileDir": true,
     "jupyter.debugJustMyCode": false,
     "python.autoComplete.extraPaths": [
+
         "c:\\users\\morr0289\\appdata\\local\\packages\\pythonsoftwarefoundation.python.3.10_qbz5n2kfra8p0\\localcache\\local-packages\\python310\\site-packages"
 
     ],
@@ -12,6 +13,7 @@
         "c:\\users\\morr0289\\appdata\\local\\packages\\pythonsoftwarefoundation.python.3.10_qbz5n2kfra8p0\\localcache\\local-packages\\python310\\site-packages"
     ],
     "python.analysis.include": [
-        "c:\\users\\morr0289\\appdata\\local\\packages\\pythonsoftwarefoundation.python.3.10_qbz5n2kfra8p0\\localcache\\local-packages\\python310\\site-packages"
-    ]
+        "c:\\users\\morr0289\\appdata\\local\\packages\\pythonsoftwarefoundation.python.3.10_qbz5n2kfra8p0\\localcache\\local-packages\\python310\\site-packages","c:\\users\\morr0289\\appdata\\roaming\\python\\python312\\site-packages"
+    ],
+    "python.createEnvironment.contentButton": "show"
 }

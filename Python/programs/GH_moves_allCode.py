@@ -99,205 +99,205 @@ if arm.error_code != 0:
  
 while arm.connected and arm.error_code == 0:
 #data is big-endian
-    arm.set_position(x=272.50, y=-10.76, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=272.50, y=-10.76, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x15,0x00,0x06,0x00,0x01,0x00,0x65]
     sender(datas)
-    arm.set_position(x=272.50, y=10.76, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=272.50, y=10.76, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x05,0x00,0x06,0x00,0x01,0x00,0x68]
     sender(datas)
-    arm.set_position(x=275.05, y=15.69, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=275.05, y=15.69, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x1f,0x00,0x06,0x00,0x01,0x00,0x6b]
     sender(datas)
-    arm.set_position(x=275.05, y=-15.69, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=275.05, y=-15.69, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x04,0x00,0x06,0x00,0x01,0x00,0x6e]
     sender(datas)
-    arm.set_position(x=277.60, y=-19.35, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=277.60, y=-19.35, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x26,0x00,0x06,0x00,0x01,0x00,0x71]
     sender(datas)
-    arm.set_position(x=277.60, y=19.35, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=277.60, y=19.35, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x03,0x00,0x06,0x00,0x01,0x00,0x74]
     sender(datas)
-    arm.set_position(x=280.15, y=22.36, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=280.15, y=22.36, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x2c,0x00,0x06,0x00,0x01,0x00,0x77]
     sender(datas)
-    arm.set_position(x=280.15, y=-22.36, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=280.15, y=-22.36, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x03,0x00,0x06,0x00,0x01,0x00,0x7a]
     sender(datas)
-    arm.set_position(x=282.70, y=-24.96, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=282.70, y=-24.96, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x31,0x00,0x06,0x00,0x01,0x00,0x7d]
     sender(datas)
-    arm.set_position(x=282.70, y=24.96, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=282.70, y=24.96, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x03,0x00,0x06,0x00,0x01,0x00,0x80]
     sender(datas)
-    arm.set_position(x=285.25, y=27.27, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=285.25, y=27.27, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x36,0x00,0x06,0x00,0x01,0x00,0x83]
     sender(datas)
-    arm.set_position(x=285.25, y=-27.27, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=285.25, y=-27.27, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x03,0x00,0x06,0x00,0x01,0x00,0x86]
     sender(datas)
-    arm.set_position(x=287.80, y=-29.36, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=287.80, y=-29.36, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x3a,0x00,0x06,0x00,0x01,0x00,0x89]
     sender(datas)
-    arm.set_position(x=287.80, y=29.36, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=287.80, y=29.36, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x03,0x00,0x06,0x00,0x01,0x00,0x8c]
     sender(datas)
-    arm.set_position(x=290.35, y=31.27, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=290.35, y=31.27, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x3e,0x00,0x06,0x00,0x01,0x00,0x8f]
     sender(datas)
-    arm.set_position(x=290.35, y=-31.27, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=290.35, y=-31.27, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x03,0x00,0x06,0x00,0x01,0x00,0x92]
     sender(datas)
-    arm.set_position(x=292.90, y=-33.03, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=292.90, y=-33.03, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x42,0x00,0x06,0x00,0x01,0x00,0x95]
     sender(datas)
-    arm.set_position(x=292.90, y=33.03, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=292.90, y=33.03, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x03,0x00,0x06,0x00,0x01,0x00,0x98]
     sender(datas)
-    arm.set_position(x=295.45, y=34.66, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=295.45, y=34.66, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x45,0x00,0x06,0x00,0x01,0x00,0x9b]
     sender(datas)
-    arm.set_position(x=295.45, y=-34.66, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=295.45, y=-34.66, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x00,0x9e]
     sender(datas)
-    arm.set_position(x=298.00, y=-36.18, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=298.00, y=-36.18, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x48,0x00,0x06,0x00,0x01,0x00,0xa1]
     sender(datas)
-    arm.set_position(x=298.00, y=36.18, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=298.00, y=36.18, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x00,0xa4]
     sender(datas)
-    arm.set_position(x=300.55, y=37.60, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=300.55, y=37.60, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x4b,0x00,0x06,0x00,0x01,0x00,0xa7]
     sender(datas)
-    arm.set_position(x=300.55, y=-37.60, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=300.55, y=-37.60, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x00,0xaa]
     sender(datas)
-    arm.set_position(x=303.10, y=-38.95, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=303.10, y=-38.95, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x4d,0x00,0x06,0x00,0x01,0x00,0xad]
     sender(datas)
-    arm.set_position(x=303.10, y=38.95, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=303.10, y=38.95, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x00,0xb0]
     sender(datas)
-    arm.set_position(x=305.65, y=40.21, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=305.65, y=40.21, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x50,0x00,0x06,0x00,0x01,0x00,0xb3]
     sender(datas)
-    arm.set_position(x=305.65, y=-40.21, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=305.65, y=-40.21, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x00,0xb6]
     sender(datas)
-    arm.set_position(x=308.20, y=-41.40, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=308.20, y=-41.40, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x52,0x00,0x06,0x00,0x01,0x00,0xb9]
     sender(datas)
-    arm.set_position(x=308.20, y=41.40, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=308.20, y=41.40, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x00,0xbc]
     sender(datas)
-    arm.set_position(x=310.75, y=42.53, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=310.75, y=42.53, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x55,0x00,0x06,0x00,0x01,0x00,0xbf]
     sender(datas)
-    arm.set_position(x=310.75, y=-42.53, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=310.75, y=-42.53, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x00,0xc2]
     sender(datas)
-    arm.set_position(x=313.30, y=-43.60, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=313.30, y=-43.60, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x57,0x00,0x06,0x00,0x01,0x00,0xc5]
     sender(datas)
-    arm.set_position(x=313.30, y=43.60, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=313.30, y=43.60, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x00,0xc8]
     sender(datas)
-    arm.set_position(x=315.85, y=44.62, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=315.85, y=44.62, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x59,0x00,0x06,0x00,0x01,0x00,0xcb]
     sender(datas)
-    arm.set_position(x=315.85, y=-44.62, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=315.85, y=-44.62, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x00,0xce]
     sender(datas)
-    arm.set_position(x=318.40, y=-45.58, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=318.40, y=-45.58, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x5b,0x00,0x06,0x00,0x01,0x00,0xd1]
     sender(datas)
-    arm.set_position(x=318.40, y=45.58, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=318.40, y=45.58, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x00,0xd4]
     sender(datas)
-    arm.set_position(x=320.95, y=46.49, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=320.95, y=46.49, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x5c,0x00,0x06,0x00,0x01,0x00,0xd7]
     sender(datas)
-    arm.set_position(x=320.95, y=-46.49, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=320.95, y=-46.49, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x00,0xda]
     sender(datas)
-    arm.set_position(x=323.50, y=-47.36, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=323.50, y=-47.36, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x5e,0x00,0x06,0x00,0x01,0x00,0xdd]
     sender(datas)
-    arm.set_position(x=323.50, y=47.36, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=323.50, y=47.36, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x00,0xe0]
     sender(datas)
-    arm.set_position(x=326.05, y=48.19, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=326.05, y=48.19, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x60,0x00,0x06,0x00,0x01,0x00,0xe3]
     sender(datas)
-    arm.set_position(x=326.05, y=-48.19, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=326.05, y=-48.19, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x00,0xe6]
     sender(datas)
-    arm.set_position(x=328.60, y=-48.97, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=328.60, y=-48.97, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x61,0x00,0x06,0x00,0x01,0x00,0xe9]
     sender(datas)
-    arm.set_position(x=328.60, y=48.97, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=328.60, y=48.97, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x00,0xec]
     sender(datas)
-    arm.set_position(x=331.15, y=49.72, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=331.15, y=49.72, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x63,0x00,0x06,0x00,0x01,0x00,0xef]
     sender(datas)
-    arm.set_position(x=331.15, y=-49.72, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=331.15, y=-49.72, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x00,0xf2]
     sender(datas)
-    arm.set_position(x=333.70, y=-50.43, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=333.70, y=-50.43, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x64,0x00,0x06,0x00,0x01,0x00,0xf5]
     sender(datas)
-    arm.set_position(x=333.70, y=50.43, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=333.70, y=50.43, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x00,0xf8]
     sender(datas)
-    arm.set_position(x=336.25, y=51.10, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=336.25, y=51.10, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x66,0x00,0x06,0x00,0x01,0x00,0xfb]
     sender(datas)
-    arm.set_position(x=336.25, y=-51.10, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=336.25, y=-51.10, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x00,0xfe]
     sender(datas)
-    arm.set_position(x=338.80, y=-51.74, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=338.80, y=-51.74, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x67,0x00,0x06,0x00,0x01,0x01,0x01]
     sender(datas)
-    arm.set_position(x=338.80, y=51.74, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=338.80, y=51.74, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x01,0x04]
     sender(datas)
-    arm.set_position(x=341.35, y=52.34, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=341.35, y=52.34, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x68,0x00,0x06,0x00,0x01,0x01,0x07]
     sender(datas)
-    arm.set_position(x=341.35, y=-52.34, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=341.35, y=-52.34, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x01,0x0a]
     sender(datas)
-    arm.set_position(x=343.90, y=-52.91, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=343.90, y=-52.91, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x69,0x00,0x06,0x00,0x01,0x01,0x0d]
     sender(datas)
-    arm.set_position(x=343.90, y=52.91, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=343.90, y=52.91, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x01,0x10]
     sender(datas)
-    arm.set_position(x=346.45, y=53.46, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=346.45, y=53.46, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x6a,0x00,0x06,0x00,0x01,0x01,0x13]
     sender(datas)
-    arm.set_position(x=346.45, y=-53.46, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=346.45, y=-53.46, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x01,0x16]
     sender(datas)
-    arm.set_position(x=349.00, y=-53.97, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=349.00, y=-53.97, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x6b,0x00,0x06,0x00,0x01,0x01,0x19]
     sender(datas)
-    arm.set_position(x=349.00, y=53.97, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=349.00, y=53.97, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x01,0x1c]
     sender(datas)
-    arm.set_position(x=351.55, y=54.45, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=351.55, y=54.45, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x6c,0x00,0x06,0x00,0x01,0x01,0x1f]
     sender(datas)
-    arm.set_position(x=351.55, y=-54.45, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=351.55, y=-54.45, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x01,0x22]
     sender(datas)
-    arm.set_position(x=354.10, y=-54.90, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=354.10, y=-54.90, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x6d,0x00,0x06,0x00,0x01,0x01,0x25]
     sender(datas)
-    arm.set_position(x=354.10, y=54.90, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=354.10, y=54.90, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x02,0x00,0x06,0x00,0x01,0x01,0x28]
     sender(datas)
-    arm.set_position(x=356.65, y=55.33, z=1.85, roll=0.00, pitch=0.00, yaw=0.00, speed=300.00, is_radian=False, wait=True)
+    arm.set_position(x=356.65, y=55.33, z=1.85, roll=180.0, pitch=0.00, yaw=0.00, speed=50.0, is_radian=False, wait=True)
     datas = [0x09,0x10,0x00,0x00,0x00,0x04,0x08,0x00,0x6e,0x00,0x06,0x00,0x01,0x01,0x2b]
     sender(datas)
 #finish up:   

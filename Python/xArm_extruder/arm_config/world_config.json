@@ -1,0 +1,64 @@
+{
+    "5":{
+        "WOELD_OFFSET_DEFUALT_ID":"000001",
+        "WORLD_OFFSET":[
+            {
+                "disableEdit":true,
+                "id":"000001",
+                "name":{
+                    "cn":"基坐标系",
+                    "en":"Base Coordinate System"
+                },
+                "values":[
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        ]
+    },
+    "6":{
+        "WOELD_OFFSET_DEFUALT_ID":"000001",
+        "WORLD_OFFSET":[
+            {
+                "id":"000001",
+                "name":{
+                    "cn":"基坐标系",
+                    "en":"Base Coordinate System"
+                },
+                "values":[
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        ]
+    },
+    "7":{
+        "WOELD_OFFSET_DEFUALT_ID":"000001",
+        "WORLD_OFFSET":[
+            {
+                "disableEdit":true,
+                "id":"000001",
+                "name":{
+                    "cn":"基坐标系",
+                    "en":"Base Coordinate System"
+                },
+                "values":[
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        ]
+    }
+}

@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../..",
+			"PATH": "C:\\Users\\morr0289\\AppData\\Roaming\\Python\\Python312\\"
+		}
+	],
+	"settings": {
+		"python.terminal.executeInFileDir": true,
+		"python.defaultInterpreterPath": "C:\\Users\\morr0289\\AppData\\Roaming\\Python\\Python312"
+	}
+}
