@@ -13,10 +13,6 @@ Chris Morrey at the Christopher C Gibbs College of Architecture, University of O
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
   Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public
-  License along with this software; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include <CircularBuffer.h>
 #include <SPI.h>
@@ -50,7 +46,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define EXTRUDE_GLCD_HEIGHT 7 
 #define EXTRUDE_GLCD_WIDTH  24 
 static unsigned char PROGMEM const extrude_glcd_bmp[] =
-{ 0b00001100, 0b00011000, 0b00000000,
+  { 0b00001100, 0b00011000, 0b00000000,
   0b00011100, 0b00011100, 0b00000000,
   0b00111100, 0b01111111, 0b11111111,
   0b01111100, 0b11111111, 0b11111111,
@@ -116,10 +112,10 @@ int blue = 3;
 //--Initialize everything---------------------------------------------------------
 FlexyStepper stepper;
 packet in,next;
-CircularBuffer<packet,100> queue;
+CircularBuffer<packet,144> queue;
 
 void pollAndStoreData(){ 
-  int cap = queue.capacity;
+  int cap = (queue.capacity - 6);
   while (queue.size() < cap){
     ModbusRTUServer.poll();
     in.index = ModbusRTUServer.holdingRegisterRead(0);
@@ -129,32 +125,35 @@ void pollAndStoreData(){
     in.end = ModbusRTUServer.holdingRegisterRead(4);
     in.lnOut = ModbusRTUServer.holdingRegisterRead(5); 
     }
+    queue.push(in);
   }
 
 void statusLED(int color){
+    pixels.setBrightness(50);
     pixels.clear(); // Set all pixel colors to 'off'
     switch(color){
     case 0:
     pixels.clear();
-    case 1:
-      pixels.setPixelColor(1, pixels.Color(0, 255, 0));
-    case 2:
-      pixels.setPixelColor(1, pixels.Color(255, 0, 0));
-    case 3:
-      pixels.setPixelColor(1, pixels.Color(0, 0, 255));
+    case 1://green
+      pixels.setPixelColor(0, pixels.Color(250, 0, 0));
+    case 2://red
+      pixels.setPixelColor(0, pixels.Color(0, 250, 0));
+    case 3://blue
+      pixels.setPixelColor(0, pixels.Color(0, 0, 250));
     }
     pixels.show();   // Send the updated pixel colors to the hardware.
 }
 
 void statusLEDflash(int color,long interval,long time){
+    pixels.setBrightness(50);
     pixels.clear(); // Set all pixel colors to 'off'
     switch(color){
-    case 1:
-      pixels.setPixelColor(1, pixels.Color(0, 255, 0));
-    case 2:
-      pixels.setPixelColor(1, pixels.Color(255, 0, 0));
-    case 3:
-      pixels.setPixelColor(1, pixels.Color(0, 0, 255));
+    case 1://green
+      pixels.setPixelColor(0, pixels.Color(250, 0, 0));
+    case 2://red
+      pixels.setPixelColor(0, pixels.Color(0,250, 0));
+    case 3://blue
+      pixels.setPixelColor(0, pixels.Color(0, 0, 250));
     }
     pixels.show(); // Send the updated pixel colors to the hardware.
     int i = 0;  
@@ -166,7 +165,7 @@ void statusLEDflash(int color,long interval,long time){
 }
 
 void retrieveData(){
-  statusLED(3);
+  //statusLED(3);
   next = queue.shift();
   delay(100);
 }
@@ -176,6 +175,23 @@ int readDigitalFromArm(){
   return val;
 }
 
+/*'''Modbus format:
+0x07=slave id
+0x10=function 16 write registers, function 3 read registers
+0x00,0x00=beginning address to write
+0x00,0x05 = number of registers
+0x0a=number of bytes(2x registers)
+0x00,0x15=register 0 index
+0x00,0x06=register 1 steps
+0x00,0x00=register 2 espeed
+0x00,0x01=register 3 direction 1=forward 0=reverse
+0x00,0x00=register 4 end of file 1=stop 0=continue
+0x00,0x00=register 5 index back to arm
+Digitals:
+TI0: ready flag: 1=ready, 0=not ready
+TI1: end flag: 0=end, 1=run
+TO0: reset extruder: 0=reset, 1=normal
+TO1: */
 
 void setup() {
   pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
@@ -220,32 +236,16 @@ void setup() {
   delay(5000);
    
 
-/*'''Modbus format:
-0x07=slave id
-0x10=function 16 write registers, function 3 read registers
-0x00,0x00=beginning address to write
-0x00,0x05 = number of registers
-0x0a=number of bytes(2x registers)
-0x00,0x15=register 0 index
-0x00,0x06=register 1 steps
-0x00,0x00=register 2 espeed
-0x00,0x01=register 3 direction 1=forward 0=reverse
-0x00,0x00=register 4 end of file 1=stop 0=continue
-0x00,0x00=register 5 spare
-Digitals:
-TI0: ready flag: 1=ready, 0=not ready
-TI1: end flag: 0=end, 1=run
-TO0: reset extruder: 0=reset, 1=normal
-TO1: */
 
-ModbusRTUServer.configureHoldingRegisters(0x00,6); 
 
-stepper.connectToPins(MOTOR_STEP_PIN, MOTOR_DIRECTION_PIN);
+  ModbusRTUServer.configureHoldingRegisters(0x00,6); 
 
-digitalWrite(TI0,HIGH);//
-delay(500);
+  stepper.connectToPins(MOTOR_STEP_PIN, MOTOR_DIRECTION_PIN);
 
-while (!ModbusRTUServer.poll()) { //modbus initial poll to get first line number and clear registers
+  digitalWrite(TI0,HIGH);//
+  delay(500);
+
+  while (!ModbusRTUServer.poll()) { //modbus initial poll to get first line number and clear registers
     display.clearDisplay();   
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(1,0);  
