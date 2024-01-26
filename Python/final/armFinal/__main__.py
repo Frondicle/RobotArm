@@ -2,7 +2,7 @@
 
 import sys
 
-sys.path.append("C:\\Users\\morr0289\\Documents\\Github\\RobotArm\\Python\\final\\armFinal")
+sys.path.append("C:\\Users\\morr0289\\Documents\\Github\\RobotArm\\Python\\final\\armFinal\\")
 #sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import time
 #from urllib import response
