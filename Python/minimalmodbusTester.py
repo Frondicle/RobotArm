@@ -5,15 +5,15 @@ PORT='COM6' #be sure your port settings in Windows correspond to the settings he
 
 
 #Set up instrument
-instrument = minimalmodbus.Instrument(PORT,9,minimalmodbus.MODE_RTU)
+instrument = minimalmodbus.Instrument(PORT,7,minimalmodbus.MODE_RTU)
 
 #Make the settings explicit
-instrument.serial.baudrate = 9600        # 9600 is the baudrate the arduino is configured to use.
+instrument.serial.baudrate = 9600        # 9600 is the baudrate the arduino is configured to us
 instrument.serial.bytesize = 8
 instrument.serial.parity   = minimalmodbus.serial.PARITY_NONE
 instrument.serial.stopbits = 1
 instrument.serial.timeout  = 1          # seconds
-instrument.address = 9      # this is the slave address number arduino is configured to use.    
+instrument.address = 7      # this is the slave address number arduino is configured to use.    
 instrument.close_port_after_each_call = True
 instrument.clear_buffers_before_each_transaction = True
 

@@ -6,7 +6,6 @@
   - [Controller Warn Code](#controller-warn-code)
   - [Controller Error Code](#controller-error-code)
   - [Servo Error Code](#servo-error-code)
-  
   - [Gripper Error Code](#gripper-error-code)
   - [Bio Gripper Error Code](#bio-gripper-error-code)
   - [Linear Motor Error Code](#linear-motor-error-code)

@@ -1,6 +1,6 @@
 import serial
 import time
-import _winreg as winreg
+import winreg as winreg
 import itertools
 import datetime
 

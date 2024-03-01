@@ -197,7 +197,7 @@ class XCONF(object):
         }
 
     class SerialConf:
-        SERIAL_BAUD = 19200 #2000000  921600
+        SERIAL_BAUD = 2000000  # 921600
         UXBUS_RXQUE_MAX = 10
         UXBUS_DEF_FROMID = 0xAA
         UXBUS_DEF_TOID = 0x55

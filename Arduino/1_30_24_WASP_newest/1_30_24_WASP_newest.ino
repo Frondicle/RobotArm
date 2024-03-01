@@ -66,6 +66,8 @@ static unsigned char PROGMEM const retract_glcd_bmp[] =
   0b00000000, 0b00011100, 0b00011100,
   0b00000000, 0b00011000, 0b00110000};
 
+//bool debug = TRUE;
+
 //--Extruder physical characteristics------------------------------------------
 int steps_per_revolution = 200;
 float barrel_diameter_mm = 10;
@@ -100,8 +102,10 @@ int green = 1;
 int red = 2;
 int blue = 3;
 int none = 0;
+
 char line1[100];
 char line2[100];
+
 bool queuePush = FALSE;
 
  struct packet{
@@ -122,14 +126,14 @@ void statusLED(int color){
     pixels.setBrightness(50);
     pixels.clear(); // Set all pixel colors to 'off'
     switch(color){
-    case 0:
-    pixels.clear();
-    case 1://green
-      pixels.setPixelColor(0, pixels.Color(250, 0, 0));
-    case 2://red
-      pixels.setPixelColor(0, pixels.Color(0, 250, 0));
-    case 3://blue
-      pixels.setPixelColor(0, pixels.Color(0, 0, 250));
+      case 0:
+      pixels.clear();
+      case 1://green
+        pixels.setPixelColor(0, pixels.Color(250, 0, 0));
+      case 2://red
+        pixels.setPixelColor(0, pixels.Color(0, 250, 0));
+      case 3://blue
+        pixels.setPixelColor(0, pixels.Color(0, 0, 250));
     }
     pixels.show();   // Send the updated pixel colors to the hardware.
 }
@@ -137,24 +141,24 @@ void statusLED(int color){
 void statusLEDflash(int color,long interval,long numFlashes){
     pixels.setBrightness(50);
     pixels.clear(); // Set all pixel colors to 'off'
-    switch(color){
-    case 1://green
-      pixels.setPixelColor(0, pixels.Color(250, 0, 0));
-    case 2://red
-      pixels.setPixelColor(0, pixels.Color(0,250, 0));
-    case 3://blue
-      pixels.setPixelColor(0, pixels.Color(0, 0, 250));
-    }
+      switch(color){
+      case 1://green
+        pixels.setPixelColor(0, pixels.Color(250, 0, 0));
+      case 2://red
+        pixels.setPixelColor(0, pixels.Color(0,250, 0));
+      case 3://blue
+        pixels.setPixelColor(0, pixels.Color(0, 0, 250));
+      }
      // Send the updated pixel colors to the hardware.
     int i = 0;  
     while (i < numFlashes){
-    pixels.show();
-    delay(interval);
-    pixels.clear();
-    i++;
-    }
+      pixels.show();
+      delay(interval);
+      pixels.clear();
+      delay(interval);
+      i++;
+      }
 }
-
 void pollAndStoreData(){ 
   int cap = (queue.capacity - 6);
   while (queue.size() < cap){
@@ -174,13 +178,31 @@ void pollAndStoreData(){
       display.println("PUSH");
       display.println("FAILED");
       display.display();
-    };
+    }
+      else{
+      display.clearDisplay();   
+      display.setTextColor(SSD1306_WHITE);
+      display.setCursor(1,0);  
+      display.setTextSize(1);
+      display.println("pollAndStoreData: PUSH:"); 
+      display.print(in.index);
+      display.print(in.move);
+      display.print(in.speed);
+      display.println(in.dir);
+      display.display();
     statusLED(none);
   }
-
+}
 packet retrieveData(){
   statusLED(green);
   data = queue.shift();
+  display.clearDisplay();   
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(1,100);  
+  display.setTextSize(1); 
+  display.println(data.index);
+  display.display();
+  delay(500);
   return data;
 }
 
@@ -193,7 +215,7 @@ int readDigitalFromArm(){
       display.println("ARM OK");
       display.display();
   return val;
-}
+  }
 
 /*'''Modbus format:
 0x07=slave id
@@ -250,7 +272,7 @@ void setup() {
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(1,9);  
   display.setTextSize(1); 
-  display.println("1/26/24_WASP_latest");
+  display.println("1/30/24_WASP_latest");
   display.display();
   delay(3000);
    
@@ -286,6 +308,26 @@ void loop() {
   statusLED(none);
   while (lastEnd != 1){
     next = retrieveData();
+    display.clearDisplay();   
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(1,0);  
+    display.setTextSize(1); 
+    display.println("received: ");   
+    display.setTextSize(1);
+    /*long index;
+    long move;
+    long speed;
+    long dir;
+    long end;
+    long lnOut;*/
+    display.print(next.index);
+    display.print(next.move);
+    display.print(next.speed);
+    display.println(next.dir);
+    display.println(next.end);
+    display.print(next.lnOut);
+    display.display();
+    delay(200);
     if ((stepper.motionComplete() == TRUE)&&(readDigitalFromArm() == HIGH)){
     if (next.index ==(lastIndex + 1)){
       digitalWrite(TI0,HIGH); //set ready flag to 'ready'

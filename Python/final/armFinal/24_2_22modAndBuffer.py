@@ -1,5 +1,5 @@
 #Chris Morrey 1/25/2023
-#newest version!!!!!
+#modbus and buffer only
 import sys
 import time
 #from urllib import response
@@ -19,7 +19,7 @@ xlpath = "C:\\Users\\morr0289\\Documents\\Repositories\\GitHub\\RobotArm\\Python
 
 mod = pd.read_excel(xlpath, "1", index_col='index',usecols=['index','move','espeed','dir','end'])
 
-move = pd.read_excel(xlpath, "1", index_col='index',usecols=['index','x','y','z','pitch','roll','yaw','fspeed'])
+#move = pd.read_excel(xlpath, "1", index_col='index',usecols=['index','x','y','z','pitch','roll','yaw','fspeed'])
 
 init = [0x07,0x10,0x00,0x00,0x00,0x05,0x0a,0x00,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00] #clear all registers, register 0 index to 1
 
@@ -31,6 +31,8 @@ goHome = [0,305,0,100,0,-180,0,xArmDefaultSpeed]
 
 ip = '192.168.1.240'
 arm = XArmAPI(ip)
+
+speaker = win32com.client.Dispatch("SAPI.SpVoice")
 
 
 def errors(module,returned):
@@ -57,33 +59,12 @@ def errors(module,returned):
         time.sleep(2)
         quit()
 
-def hexer(x):
-    h = str(hex(x))
-    s = h.lstrip("0x")
-    e = s.zfill(4)
-    f = e[0]
-    g = e[1]
-    h = e[2]
-    i = e[3]
-    j = "0x"
-    k = ","
-    a = j+f+g
-    b = j+h+i
-    c = [a,b]
-    return c
-
-def getMove(frame,ln):
-    move = frame.iloc[ln]
-    pti = move['index']
-    ptx = move['x']
-    pty = move['y']
-    ptz = move['z']
-    ptp = move['pitch']
-    ptr = move['roll']
-    ptyaw = move['yaw']
-    pts = move['fspeed']
-    mv = [pti,ptx,pty,ptz,ptp,ptr,ptyaw,pts]
-    return mv
+def getExtruderFlag(char):
+    if char =='bufferAvailable':
+        x = arm.get_tgpio_digital(0) #extruder buffer available 
+    elif char =='end':
+        x = arm.get_tgpio_digital(1)
+    return x
 
 def getMod(frame,ln):
     modData=frame.iloc[ln]
@@ -93,8 +74,8 @@ def getMod(frame,ln):
     dir=modData['dir']
     end=modData['end']
     dframe = [0x07,0x10,0x00,0x00,0x00,0x05,0x0a, indx, move, spd, dir, end]
-    '''dframe = (0x07,0x10,0x00,0x00,0x00,0x04,0x08, move // 256 % 256, move // 256,spd // 256 % 256, spd // 256, dir // 256 % 256, dir // 256, end // 256 % 256,end // 256,)'''
-    response = (dframe,indx)
+    '''dframe = [0x07,0x10,0x00,0x00,0x00,0x05,0x0a, indx // 256 % 256, indx // 256, move // 256 % 256, move // 256, spd // 256 % 256, spd // 256, dir // 256 % 256, dir // 256, end // 256 % 256,end // 256]'''
+    response = [dframe,indx]
     return response
 
 def getIndex():
@@ -106,87 +87,73 @@ def getIndex():
     pex = modResponse[4]
     lex = [dex,pex]
     rex = int.from_bytes(lex, 'big', signed=False)
-    print ('from getIndex: ',rex)
+    print ('from getIndex: ',rex,', code = ',data[0])
     return rex
 
-'''def getQueueState():
-    data_frame = [0x07,0x03,0x00,0x04,0x00,0x01]
-    mod = arm.getset_tgpio_modbus_data(data_frame,host_id=9)
-    code,response = mod
-    print('queue state: ',code,", ", response)
-    return response'''
+def getBuffer():
+    global arm
+    data = arm.getset_tgpio_modbus_data([0x07,0x03,0x00,0x00,0x00,0x0a],host_id=9)
+    print ('code: ',data [0],'data: ',data[1])
+    modResponse = data[1]
+    indexbig = modResponse[3]
+    indexsmall = modResponse[4]
+    movebig = modResponse[5]
+    movesmall = modResponse[6]
+    espeedbig = modResponse[7]
+    espeedsmall = modResponse[8]
+    dirbig = modResponse[9]
+    dirsmall = modResponse[10]
+    endbig = modResponse[11]
+    endsmall = modResponse[12]
+    index = int.from_bytes([indexbig,indexsmall], 'big', signed=False)
+    move = int.from_bytes([movebig,movesmall], 'big', signed=False)
+    espeed = int.from_bytes([espeedbig,espeedsmall], 'big', signed=False)
+    dir = int.from_bytes([dirbig,dirsmall], 'big', signed=False)
+    end = int.from_bytes([endbig,endsmall], 'big', signed=False)
+    rex = [index,move,espeed,dir,end]
+    ret = (data[0],rex)
+    print ('from getBuffer: index:',rex[0],', move: ',rex[1],' speed: ',rex[2],' dir: ',rex[3],' end: ',rex[4],' code = ',data[0])
+    return ret
 
 def sender(data_frame):
-    global id
-    #
-    #arm.set_state(state=0)
-    code, digitals = arm.get_tgpio_digital()
     ret = arm.getset_tgpio_modbus_data(data_frame,host_id=9)
     if ret[0] == 0:
         print ('sender: data_frame:',data_frame)
-        print('sender: modresponse: ',ret[1],', codes: ',ret[0])
+        print('sender: modresponse: ',ret[1][0],ret[1][1],ret[1][2],ret[1][3],ret[1][4],ret[1][5],ret[1][6],ret[1][7],ret[1][8],ret[1][9],ret[1][10],ret[1][11],ret[1][12])
     else:
         print('sender: ',ret[0])
     arm.clean_error()
-
-def mover(move):
-    arm.get_err_warn_code(show=True, lang='en')
-    arm.clean_warn()
-    arm.clean_error()
-    arm.set_state(state=0)
-    #arm.set_mode(mode=0)
-    print('move: ',move)
-    arm.set_position(x=move[1], y=move[2], z=move[3], roll=move[5], pitch=move[4], yaw=move[6], speed=move[7], is_radian=False, wait=True)
-    arm.clean_error()
-
-def getExtruderFlag(char):
-    global arm
-    if char =='ready':
-        x = arm.get_tgpio_digital(0)
-    elif char =='end':
-        x = arm.get_tgpio_digital(1)
-    return x
 
 def resetExtruder():
     arm.set_tgpio_digital(0,1)
     time.sleep(1)
     arm.set_tgpio_digital(0,0)
 
-def setArmReady(x):
+'''def setArmReady(x):
     if x =='TRUE':
         arm.set_tgpio_digital(1,1)
         print ('setArmReady: arm ready')
     elif x =='FALSE':
         arm.set_tgpio_digital(1,0)
-        print ('setArmReady: arm not ready')
+        print ('setArmReady: arm not ready')'''
 
-def endAll(datas,lastMove):
+def endAll(datas): #changed from original!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     sender(datas)
-    mover(lastMove)
     time.sleep(2)
+    speaker.speak("Shutting down extruder.")
     resetExtruder()
     #pd.ExcelFile.close(xlpath)
     arm.reset(wait=True)
     arm.set_state(state=4)
     arm.disconnect()
 
-'''TGPIO for air solenoid---------------------------------------------
-value = 0
-    code = arm.set_cgpio_digital_output_function(i, value)
-    print('set_cgpio_digital_output_function({}, {}), code={}'.format(i, value, code))
-# Reset: 255
-for i in range(4, 8):
-    code = arm.set_cgpio_digital_output_function(i, 255)
-    print('set_cgpio_digital_output_function({}, {}), code={}'.format(i, value, code))'''
-'''
-arm.reset(wait=True)
-arm.motion_enable(enable=True)
-arm.get_err_warn_code(show=True, lang='en')
-arm.clean_warn()
-arm.clean_error()
-time.sleep(2)'''
-
-speaker = win32com.client.Dispatch("SAPI.SpVoice")
+def packBuffer(last):   
+    while getExtruderFlag('bufferAvailable') == 1:#finish this function!!!!!
+        sendIndex = (last + 1)
+        data=getMod(mod,sendIndex)
+        sender(data)
+        last = sendIndex
+    return ret
 
 speaker.speak("Resetting Extruder.")
 resetExtruder()
@@ -202,41 +169,35 @@ time.sleep(1)
 id = 7
 baudRate = 9600
 ret = arm.core.set_modbus_timeout(7)  
-print('set modbus timeout, ret = %d' % (ret[0]),'line 203')
-#arm.clean_error()    
+print('set modbus timeout, ret = %d' % (ret[0]),'line 205')
+arm.clean_error()    
 ret = arm.core.set_modbus_baudrate(baudRate)  
 print('set modbus baudrate, ret = %d' % (ret[0]))
 time.sleep(1)
-#arm.set_state(state=0)
-arm.set_tcp_load(weight=0.91, center_of_gravity=[0,80,-40]) #TCP info for extruder
-arm.set_tcp_offset([0,0,111.5,0,-30.3,0], is_radian=False)
-arm.set_collision_tool_model(22, x=40, y=40, z=111.5)
-code, digitals = arm.get_tgpio_digital()
+arm.set_state(state=0)
 
 speaker.Speak("Robot Arm Connected.")
 
-time.sleep(5)
+time.sleep(2)
 #initial packet
 sender(init)
 print('init packet sent')
 speaker.Speak("Initializing.")
-time.sleep(1)
-mv = getIndex()
+time.sleep(3)
+dx=1
 while arm.connected:
-        while mv <= mod.size / 5:
-            print ('row: ',mv)
+        next = packBuffer(dx)
+        stuff = getBuffer()
+        if stuff[1][4]!= 1:
+            dx = stuff[1][0]+1
+            print('code:',stuff[0])
+            print('stuff:',stuff[1])
+            time.sleep(.25)
             arm.clean_error()
-            #arm.motion_enable(True)
-            setArmReady('TRUE')
-            if (getExtruderFlag('ready') == 1):
-                print('extruder ready') 
-                mv = getIndex()
-                print('mv: ',mv)
-                datas = getMod(mod,mv)   
-                newMove = getMove(move,mv)
-                sender(datas[0])
-                mover(move)
-            elif (getExtruderFlag('ready') == 0):
-                time.sleep(.05)
+        else:
+            print('end of file')
+            break
+
+
 #finish up:   
-endAll(end,goHome)
+endAll(end)

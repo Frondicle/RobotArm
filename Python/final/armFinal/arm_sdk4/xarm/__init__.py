@@ -1,2 +1,2 @@
-from .wrapper import xarm_api
+from .wrapper import XArmAPI
 from .version import __version__
