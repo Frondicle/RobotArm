@@ -31,7 +31,7 @@ Adafruit_NeoPixel pixels(1, 10, NEO_RGB + NEO_KHZ800);//pin 10
 #define TI0                6 //extruder digital output to xArm TI0, LOW for busy, red wire on standard harness
 #define TI1                 7 //spare digital output to xArm TI1, purple wire on standard harness
 //#define TO0               //to reset pin for arm reset control
-#define TO1                 21 //digital output from robot arm: high when arm is not moving
+#define TO1                 5 //digital output from robot arm: high when arm is not moving
 //--Stepper----------------------------------------------------------------------------------
 #define dirPinStepper       9 //stepper direction, HIGH for forward: green wire
 #define stepPinStepper      8  //stepper pin: high/low sequence makes one step: yellow wire
