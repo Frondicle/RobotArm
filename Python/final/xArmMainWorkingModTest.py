@@ -8,7 +8,7 @@ import math
 
 sys.path.append("C:\\Users\\morr0289\\Documents\\Repositories\\Github\\RobotArm\\Python\\final\\armFinal")
 
-from arm_sdk4.xarm.wrapper.xarm_api import XArmAPI
+from .arm_sdk4.xarm.wrapper.xarm_api import XArmAPI
 arm = XArmAPI('192.168.1.240')
 hostId = 9
 baudRate = 19200 #:param baud: 4800/9600/19200/38400/57600/115200/230400/460800/921600/1000000/1500000/2000000/2500000

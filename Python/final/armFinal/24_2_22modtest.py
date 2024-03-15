@@ -16,9 +16,9 @@ sys.path.append("C:\\Users\\morr0289\\Documents\\Github\\RobotArm\\Python\\final
 
 from arm_sdk4.xarm.wrapper.xarm_api import XArmAPI
 
-xlpath = "C:\\Users\\morr0289\\Documents\\Repositories\\GitHub\\RobotArm\\Python\\final\\grassDataWalls.xlsx"
+xlpath = "C:\\Users\\morr0289\\Documents\\Repositories\\GitHub\\RobotArm\\Python\\final\\armFinal\\data_here\\grassDataWallsShort.xlsx"
 
-mod = pd.read_excel(xlpath, "1", index_col='index',usecols=['line','move','espeed','dir','end'])
+mod = pd.read_excel(xlpath, "1", index_col=None, usecols=['dex','move','espeed','dir','end'])
 
 ip = '192.168.1.240'
 arm = XArmAPI(ip)
@@ -27,7 +27,7 @@ speaker = win32com.client.Dispatch("SAPI.SpVoice")
 
 def getMod(frame,ln):
     modData=frame.iloc[ln]
-    indx = modData['index']
+    indx = modData['dex']
     move=modData['move']
     spd=modData['espeed']
     dir=modData['dir']
@@ -84,10 +84,12 @@ arm.set_state(state=0)
 speaker.Speak("Robot Arm Connected.")
 
 time.sleep(2)
-dx = 0
+dx = 1
 while arm.connected:
     data = getMod(mod,dx)
-    while data[5] == 0:
+    print('data: ',data)
+    subdata = data[0]
+    while subdata[10] == 0:
         sender(data)
         dx += 1
         arm.clean_error()
