@@ -17,7 +17,7 @@ from arm_sdk4.xarm.wrapper.xarm_api import XArmAPI
 
 xlpath = "C:\\Users\\morr0289\\Documents\\Repositories\\GitHub\\RobotArm\\Python\\final\\armFinal\\data_here\\grassDataWallsShort.xlsx"
 
-mod = pd.read_excel(xlpath, "1", index_col='index',usecols=['index','move','espeed','dir','end'])
+mod = pd.read_excel(xlpath, "1", index_col='dex',usecols=['index','move','espeed','dir','end'])
 
 #move = pd.read_excel(xlpath, "1", index_col='index',usecols=['index','x','y','z','pitch','roll','yaw','fspeed'])
 
